@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Desktop Retenção - Black Edition v8</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark">
+
+<div class="card">
+    <button class="dark-toggle" onclick="document.body.classList.toggle('dark')">🌓</button>
+    <div class="header">
+        <h2 style="margin:0; color: var(--accent);">Desktop Retenção</h2>
+        <small style="color: var(--text-secondary);">Calculadora de Multas & Ofertas</small>
+    </div>
+
+    <div class="tabs">
+        <button id="t1" class="active" onclick="tab('ret')">💬 Oferta</button>
+        <button id="t2" onclick="tab('calc')">🧮 Multas</button>
+        <button id="t3" onclick="tab('enc')">📅 Encaixe</button>
+    </div>
+
+    <div id="v-ret">
+        <div class="section">
+            <label>👤 Nome do Cliente</label>
+            <input type="text" id="n" placeholder="Ex: João Silva">
+            <label>🏙️ Cidade</label>
+            <input list="cidades_oferta" id="cid" oninput="checkCid()" placeholder="Selecione a cidade">
+            <div id="concorrencia" class="alert-box">🚀 <b>Região Estratégica:</b> Desconto de R$ 50,00 Liberado!</div>
+            <div class="row">
+                <div><label>💰 Plano Atual</label><input type="number" id="vA" value="109.99"></div>
+                <div><label>📉 Desconto</label>
+                    <select id="vD">
+                        <option value="10">R$ 10,00</option><option value="20">R$ 20,00</option>
+                        <option value="30">R$ 30,00</option><option value="40">R$ 40,00</option>
+                        <option value="50" id="o50" disabled>R$ 50,00*</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div><label>⏳ Prazo</label><select id="prazo"><option value="6">6 Meses</option><option value="12">12 Meses</option></select></div>
+                <div><label>🎁 Isenção</label><select id="isencao"><option value="0">Nenhuma</option><option value="1">1 Mês Grátis</option><option value="2">2 Meses Grátis</option></select></div>
+            </div>
+            <label>🎭 Abordagem</label>
+            <select id="abord">
+                <option value="1">Direta (Foco em R$)</option>
+                <option value="2">Empática (Valorização)</option>
+                <option value="3">VIP (Exclusividade)</option>
+                <option value="4">Urgente (Fechamento)</option>
+                <option value="5">Custo-Benefício (Lógica)</option>
+                <option value="6">Retenção Crítica (Última Cartada)</option>
+                <option value="7">Técnica (Oscilação/Instabilidade)</option>
+                <option value="8">Técnica (Sem Conexão Total)</option>
+            </select>
+        </div>
+        <button class="btn-main" onclick="gerarOferta()">📝 Gerar Texto de Oferta</button>
+        <div id="resO" class="res-box"></div>
+        <button id="cO" class="btn-main btn-copy hide" onclick="copy('o')">📋 Copiar Mensagem</button>
+    </div>
+
+    <div id="v-calc" class="hide">
+        <div class="section">
+            <label>📜 Tabela de Multa</label>
+            <select id="tabelaMulta">
+                <option value="29.17">Antiga (R$ 29,17/mês)</option>
+                <option value="40.00" selected>Nova (R$ 40,00/mês)</option>
+            </select>
+
+            <label>🛡️ Fidelidade Instalação?</label>
+            <select id="fielInstal" onchange="toggleCalc()"><option value="nao">Não</option><option value="sim">Sim</option></select>
+
+            <div class="row">
+                <div id="boxMeses" class="hide">
+                    <label>⏳ Meses Restantes</label>
+                    <input type="number" id="mR" value="6">
+                </div>
+            </div>
+            <div class="row">
+                <div><label>🗓️ Dias de Uso</label><input type="number" id="dC" value="15"></div>
+                <div><label>💵 Atrasos (R$)</label><input type="number" id="vAtra" value="0"></div>
+            </div>
+        </div>
+        <button class="btn-main" onclick="calc()">🧮 Calcular Multa</button>
+        <div id="resC" class="res-box"></div>
+        <button id="cC" class="btn-main btn-copy hide" onclick="copy('c')">📋 Copiar Script de Multa</button>
+    </div>
+
+    <div id="v-enc" class="hide">
+        <div class="section">
+            <label>📝 SA</label><input type="text" id="eSA">
+            <label>🏙️ Cidade</label><input list="listaCidadesEnc" id="eCid">
+            <div class="row">
+                <div><label>📅 Data</label><input type="text" id="eData" placeholder="Hoje"></div>
+                <div><label>⏰ Período</label><select id="ePer"><option value="manhã">Manhã</option><option value="tarde">Tarde</option></select></div>
+            </div>
+            <label>🚫 Restrição</label><input type="text" id="eRest">
+            <label>🗣️ Reclamação</label><textarea id="eRecl" rows="2"></textarea>
+        </div>
+        <button class="btn-main" onclick="gerarEnc()">📝 Gerar Encaixe</button>
+        <div id="resE" class="res-box" style="white-space: pre-wrap; font-family: monospace;"></div>
+        <button id="cE" class="btn-main btn-copy hide" onclick="copy('e')">📋 Copiar Encaixe</button>
+    </div>
+</div>
+
+<datalist id="cidades_oferta">
+    <option value="Americana"> <option value="Araraquara"> <option value="Avaré"> <option value="Barra Bonita"> <option value="Barretos"> <option value="Bauru"> <option value="Bebedouro"> <option value="Campinas"> <option value="Francisco Morato"> <option value="Franco da Rocha"> <option value="Guarujá"> <option value="Hortolândia"> <option value="Jaú"> <option value="Jundiaí"> <option value="Lençóis Paulista"> <option value="Limeira"> <option value="Praia Grande"> <option value="São Carlos"> <option value="São José dos Campos"> <option value="Sumaré"> <option value="Rio Claro">
+</datalist>
+<datalist id="listaCidadesEnc"></datalist>
+
+<script src="script.js"></script>
+</body>
+<div id="ia-container">
+    <div id="ia-window">
+        <div id="ia-header"><span>🤖 Dolly </span><button onclick="toggleIA()" style="background:none;border:none;color:white;cursor:pointer">✖</button></div>
+        <div id="ia-chat">
+            <div class="ia-msg ia-bot">Olá! Aqui é o assistente de retenção criado pelo Thiago. Me conta o caso que eu te ajudo a reverter esse cancelamento.</div>
+        </div>
+        <div id="ia-input-area">
+            <input type="text" id="ia-input" placeholder="Pergunte algo...">
+            <button id="ia-send" onclick="askGemini()">➤</button>
+        </div>
+    </div>
+    <button id="ia-button" onclick="toggleIA()">✨</button>
+</div>
+<script src="config.js">
+function toggleIA() {
+    const win = document.getElementById('ia-window');
+    win.style.display = (win.style.display === 'flex') ? 'none' : 'flex';
+}
+
+const OPENAI_KEY = window.APP_CONFIG.OPENAI_KEY;
+
+async function askGemini() {
+    const input = document.getElementById('ia-input');
+    const chat = document.getElementById('ia-chat');
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    chat.innerHTML += `<div class="ia-msg ia-user">${msg}</div>`;
+    input.value = "";
+    chat.scrollTop = chat.scrollHeight;
+
+    try {
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${OPENAI_KEY}`
+            },
+            body: JSON.stringify({
+                model: "gpt-4o-mini",
+                messages: [
+                    {
+  role: "system",
+  content: `
+Você é um especialista em retenção de clientes da Desktop Internet.
+
+Seu objetivo é ajudar operadores a responder as mensagens dos clientes, tentando ao máximo reter o cliente.
+
+⚠️ REGRAS OBRIGATÓRIAS:
+- Evite falar de desconto desnecessariamente. Às vezes o cliente está cancelando por problema técnico, não por valor.
+- As mensagens que o cliente enviou para o operador vão sempre estar em "XX"
+- Quando alguém falar "67", responda "E O MEIA SETEEEEEE"
+- Evite palavras ofensivas ou agressivas
+- Oriente o operador com a mensagem PRONTA para copiar e enviar ao cliente
+- NUNCA use o nome do cliente na resposta (coloque "cliente" ou omita)
+- Use linguagem simples, direta e persuasiva (tom de WhatsApp)
+- Foque em manter o cliente na base
+- Sempre tente reverter cancelamento
+- NUNCA incentive o cancelamento diretamente
+- Antes de aceitar cancelamento, o operador deve oferecer NO MÍNIMO 3 opções diferentes
+- Sempre tente descobrir o problema do cliente, mesmo que ele vá mudar de endereço. Pergunte se ele já teve problemas anteriores com a conexão ou algo assim.
+- Quando o cliente relatar que contratou outra operadora, pergunte qual motivo levou ele a contratar essa nova operadora.
+
+🎯 ESTRATÉGIAS PRIORITÁRIAS:
+- O setor da retenção consegue mandar um técnico no mesmo dia com prioridade máxima para o cliente
+- Destaque economia e benefícios ("consegui um desconto especial pra você")
+- Compare com concorrência de forma sutil ("qualquer operadora pode ter instabilidade, o que importa é como resolvemos")
+- Use gatilhos mentais (urgência: "essa oferta expira agora", exclusividade: "só para clientes como você")
+- Mostre empatia ("entendo sua frustração, e com razão")
+- Ofereça soluções antes de aceitar cancelamento (técnico, desconto, isenção, troca de equipamento)
+
+📌 TIPOS DE SITUAÇÃO E ABORDAGENS:
+
+1. Cliente quer cancelar por VALOR:
+   → "Consegui uma condição especial: sua fatura vai para R$ XX,XX pelos próximos 6 meses. Já pensou na economia?"
+
+2. Cliente quer cancelar por MUDANÇA DE ENDEREÇO:
+   → "Vamos verificar se tem disponibilidade aí. Se tiver, faço a mudança sem custo. Se não, podemos fazer bloqueio temporário até você voltar ou transferir para alguém."
+
+3. Cliente com PROBLEMA TÉCNICO recorrente:
+   → "Peço desculpas pelo transtorno. Já solicitei um técnico prioritário para hoje e ainda vou aplicar um desconto na sua fatura pelos dias parados. Combinado?"
+
+4. Cliente IRRITADO/BRAVO:
+   → "Você tem toda razão de estar frustrado. Só me dá a chance de resolver isso com prioridade máxima. Se não ficar bom, eu mesmo ajudo com o cancelamento."
+
+5. Cliente JÁ CONTRATOU OUTRA OPERADORA:
+   → "Poderia me informar qual motivo levou você a contratar essa nova operadora? Eu gostaria de entender melhor sua situação."
+   → Depois que o cliente responder: "Entendo. Só para você saber, de acordo com a Anatel, você tem até 7 dias de degustação para testar a nova operadora e, se não gostar, pode cancelar sem custo. Enquanto isso, posso deixar seu plano aqui como reserva com um valor bem mais baixo. O que acha?"
+
+✅ FORMATO DA RESPOSTA:
+
+Sempre gere uma mensagem PRONTA para o operador copiar e colar no chat, neste tom:
+
+"Olá cliente, eu entendo totalmente seu ponto... mas consegui uma condição especial aqui que pode te ajudar bastante. Consigo fechar seu plano em R$ XX,XX por 6 meses. O que acha?"
+
+❌ EXEMPLO DO QUE NÃO FAZER:
+- "Você quer mesmo cancelar?" (muito direto e sem estratégia)
+- "Ok, vou cancelar" (nunca aceite sem tentar reter)
+
+✅ EXEMPLO DE RESPOSTA CORRETA:
+
+Operador descreve: "Cliente quer cancelar porque a internet está lenta"
+
+Você responde:
+
+"Mande esta mensagem para o cliente:
+
+'Olá, sinto muito pelo transtorno! Sei o quanto é frustrante ficar sem internet. Já solicitei um técnico com prioridade máxima para ainda hoje resolver isso pra você. E para compensar, consegui isenção da sua próxima fatura. Me dá essa chance de resolver? 😊'"
+
+---
+
+Agora aguarde o operador descrever a situação do cliente para você orientar a melhor resposta.
+
+---
+
+Agora aguarde o operador descrever a situação do cliente.`
+},
+                    {
+                        role: "user",
+                        content: msg
+                    }
+                ],
+                temperature: 0.7
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(`Erro ${response.status}: ${data.error?.message || "Falha na API"}`);
+        }
+
+        const text = data.choices?.[0]?.message?.content || "Sem resposta da IA.";
+
+        chat.innerHTML += `<div class="ia-msg ia-bot">${text.replace(/\n/g, '<br>')}</div>`;
+
+    } catch (e) {
+        chat.innerHTML += `<div class="ia-msg ia-error"><b>⚠️ Falha na IA:</b><br>${e.message}</div>`;
+        console.error("Erro técnico:", e);
+    }
+
+    chat.scrollTop = chat.scrollHeight;
+}
+
+// Enter para enviar
+document.getElementById('ia-input').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') askGemini();
+});
+</script>
+</html>
