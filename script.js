@@ -1,19 +1,32 @@
 var dadosRegionais = { "Central": { "SUMARÉ": ["Aguaí", "Americana", "Araras", "Artur Nogueira", "Casa Branca", "Conchal", "Cordeirópolis", "Cosmópolis", "Engenheiro Coelho", "Estiva Gerbi", "Iracemápolis", "Leme", "Limeira", "Mogi Guaçu", "Mogi Mirim", "Nova Odessa", "Paulínia", "Piracicaba", "Pirassununga", "Porto Ferreira", "Rio Claro", "Santa Bárbara DOeste", "Santa Cruz das Palmeiras", "Santa Gertrudes", "Santa Rita do Passa Quatro", "Sumaré"], "SOROCABA": ["Alumínio", "Angatuba", "Aracoiaba da Serra", "Bofete", "Boituva", "Campina do Monte Alegre", "Capela do Alto", "Capivari", "Cerquilho", "Cesario Lange", "Conchas", "Ipero", "Itapetininga", "Itu", "Jumirim", "Laranjal Paulista", "Monte Mor", "Pereiras", "Pilar do Sul", "Porangaba", "Quadra", "RAFARD", "Rio das Pedras", "Saltinho", "Salto", "Salto de Pirapora", "Sarapui", "Sorocaba", "Tatui", "Tiete", "Votorantim"], "CAMPINAS": ["Amparo", "Campinas", "Holambra", "Hortolândia", "Jaguariúna", "Lindoia", "Monte Alegre do Sul", "Pedreira", "Santo Antônio de Posse", "Serra Negra"] }, "Centro Oeste": { "ARARAQUARA": ["Americo Brasiliense", "Araraquara", "Boa Esperança do Sul", "Bocaina", "Borborema", "Cravinhos", "Descalvado", "Dobrada", "Dourado", "Gaviao Peixoto", "Guariba", "Guatapará", "Ibate", "Ibitinga", "Itaju", "Itápolis", "Matao", "Motuca", "Nova Europa", "Ribeirão Bonito", "Ribeirão Preto", "Rincao", "Santa Ernestina", "Santa Lucia", "Sao Carlos", "Tabatinga", "Trabiju"], "BARRETOS": ["Bady Bassitt", "Barretos", "Bebedouro", "Cândido Rodrigues", "Colina", "Cristais Paulista", "Fernando Prestes", "Franca", "Guaíra", "Itajobi", "Itirapua", "Jaborandi", "Jaboticabal", "Mirassol", "Monte Alto", "Olímpia", "Patrocinio Paulista", "Pindorama", "Pitangueiras", "Ribeirao Corrente", "Santa Adélia", "São José do Rio Preto"], "LENÇÓIS PAULISTA": ["Águas de Santa Bárbara", "Agudos", "Arandu", "Arealva", "Areiópolis", "Avare", "Avaré", "Bariri", "Barra Bonita", "Bauru", "Borebi", "Botucatu", "Cerqueira César", "Dois Córregos", "Iaras", "Igaraçu do Tietê", "Itaí", "Itapuí", "Itatinga", "Jau", "Jaú", "Lençóis Paulista", "Lins", "Macatuba", "Manduri", "Mineiros do Tietê", "Novo Horizonte", "Óleo", "Paranapanema", "Pardinho", "Pederneiras", "Piratininga", "Pratânia", "São Manuel"] }, "Sudeste": { "JUNDIAÍ": ["Araçariguama", "Atibaia", "Bom Jesus dos Perdões", "Bragança Paulista", "Cabreúva", "Caieiras", "Campo Limpo Paulista", "Francisco Morato", "Franco da Rocha", "Indaiatuba", "Itupeva", "Jarinu", "Jundiaí", "Louveira", "Mairiporã", "Nazaré Paulista", "Piracaia", "Valinhos", "Várzea Paulista", "Vinhedo"], "PRAIA GRANDE": ["Cubatão", "Guarujá", "Itanhaém", "Mongaguá", "Peruíbe", "Praia Grande", "Santos", "São Bernardo do Campo", "São Vicente"], "SÃO JOSE DOS CAMPOS": ["Biritiba Mirim", "Caçapava", "Guararema", "Igaratá", "Jacareí", "Mogi das Cruzes", "Salesópolis", "Santa Branca", "São José dos Campos", "São Paulo", "Taubaté", "Tremembé"] } };
 var mapCidadesInfo = {};
-var listCid50 = ["Americana", "Araraquara", "Avaré", "Barra Bonita", "Barretos", "Bauru", "Bebedouro", "Campinas", "Francisco Morato", "Franco da Rocha", "Guarujá", "Hortolândia", "Jaú", "Jundiaí", "Lençóis Paulista", "Limeira", "Praia Grande", "São Carlos", "São José dos Campos", "Sumaré", "Rio Claro"];
 
 window.onload = function() {
-    var datalist = document.getElementById('listaCidadesEnc');
-    var options = '';
+    var datalistEnc = document.getElementById('listaCidadesEnc');
+    var selOferta = document.getElementById('cid');
+    var todasCidades = [];
+    mapCidadesInfo = {};
     for (var reg in dadosRegionais) {
         for (var sub in dadosRegionais[reg]) {
             dadosRegionais[reg][sub].forEach(function(cid) {
                 mapCidadesInfo[cid.toUpperCase()] = { regional: reg, subterritorio: sub };
-                options += '<option value="' + cid + '">';
+                todasCidades.push(cid);
             });
         }
     }
-    datalist.innerHTML = options;
+    todasCidades.sort(function(a, b) { return a.localeCompare(b, 'pt-BR'); });
+    var optsEnc = '';
+    todasCidades.forEach(function(cid) {
+        optsEnc += '<option value="' + cid.replace(/"/g, '&quot;') + '">';
+    });
+    datalistEnc.innerHTML = optsEnc;
+    var htmlSel = '<option value="">— Selecione a cidade —</option>';
+    todasCidades.forEach(function(cid) {
+        var esc = cid.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+        htmlSel += '<option value="' + esc + '">' + esc + '</option>';
+    });
+    selOferta.innerHTML = htmlSel;
+    checkCid();
 };
 
 function tab(t) {
@@ -26,10 +39,39 @@ function tab(t) {
 }
 
 function checkCid() {
-    var c = document.getElementById('cid').value;
-    var isOk = listCid50.includes(c);
-    document.getElementById('o50').disabled = !isOk;
-    document.getElementById('concorrencia').style.display = isOk ? 'block' : 'none';
+    var box = document.getElementById('concorrencia');
+    var raw = (document.getElementById('cid').value || '').trim();
+    var key = raw.toUpperCase();
+    var info = mapCidadesInfo[key];
+    var isCentral = !!(info && info.regional === 'Central');
+
+    var o50 = document.getElementById('o50');
+    var o60 = document.getElementById('o60');
+    var sel = document.getElementById('vD');
+
+    o50.disabled = false;
+
+    if (info) {
+        o60.disabled = !isCentral;
+    } else {
+        o60.disabled = true;
+    }
+
+    if (o60.disabled && sel.value === '60') {
+        sel.value = '50';
+    }
+
+    if (info) {
+        box.style.display = 'block';
+        if (isCentral) {
+            box.innerHTML = '🚀 <b>Regional Central:</b> Descontos de até <strong>R$ 60,00</strong> liberados para esta cidade.';
+        } else {
+            box.innerHTML = '✅ Desconto de <strong>R$ 50,00</strong> liberado para esta cidade (<b>' + info.regional + '</b>). <em>R$ 60,00 só na Regional Central.</em>';
+        }
+    } else {
+        box.style.display = raw.length ? 'block' : 'none';
+        box.innerHTML = '⚠️ Cidade não reconhecida na base. Confira o nome na lista — <strong>R$ 60,00</strong> bloqueado até bater com uma cidade cadastrada.';
+    }
 }
 
 function toggleCalc() {
@@ -78,38 +120,41 @@ function gerarOferta() {
     document.getElementById('cO').classList.remove('hide');
     window.lastMsg = msg;
 }
+function gerarEnc() {
+    var cidBruto = (document.getElementById("eCid").value || "").trim();
+    var cidKey = cidBruto.toUpperCase();
+    var info = mapCidadesInfo[cidKey];
 
-function calc() {
-    var nome = document.getElementById('n').value || "cliente";
-    var mR = Number(document.getElementById('mR').value);
-    var plano = Number(document.getElementById('vA').value);
-    var dias = Number(document.getElementById('dC').value);
-    var atrasos = Number(document.getElementById('vAtra').value);
-    var fInstal = document.getElementById('fielInstal').value === 'sim';
-    var valorBaseMulta = Number(document.getElementById('tabelaMulta').value);
+    var sa = (document.getElementById("eSA").value || "").trim();
+    var regional = info ? info.regional : "-";
+    var sub = info ? info.subterritorio : "-";
 
-    var multaTotal = fInstal ? (mR * valorBaseMulta) : 0;
-    var prop = (plano / 30) * dias;
-    var total = multaTotal + prop + atrasos;
+    var dataVal = document.getElementById("eData").value;
+    var periodo = document.getElementById("ePer").value || "";
+    var diaFormatado = "";
+    if (dataVal && /^\d{4}-\d{2}-\d{2}$/.test(dataVal)) {
+        var p = dataVal.split("-");
+        diaFormatado = p[2] + "/" + p[1] + "/" + p[0];
+        if (periodo) diaFormatado += " — " + periodo;
+    } else {
+        diaFormatado = (dataVal || "-") + (periodo ? " — " + periodo : "");
+    }
 
-    var componentes = [];
-    if (multaTotal > 0) componentes.push("multa de instalação");
-    if (prop > 0) componentes.push("proporcional de uso");
-    if (atrasos > 0) componentes.push("faturas em aberto");
+    var restr = (document.getElementById("eRest").value || "").trim();
+    var motivo = (document.getElementById("eRecl").value || "").trim();
 
-    var explicacao = componentes.length > 0 ? " (referente a " + componentes.join(", ").replace(/, ([^,]*)$/, ' e $1') + ")" : "";
-    var scriptFinal = "Olha " + nome + ", se cancelarmos hoje o valor total para encerramento é de " + f(total) + explicacao + ".";
+    var txt =
+        "SA:\n" + sa + "\n\n" +
+        "REGIONAL:\n" + regional + "\n\n" +
+        "SUB:\n" + sub + "\n\n" +
+        "DIA:\n" + diaFormatado + "\n\n" +
+        "RESTRIÇAO:\n" + restr + "\n\n" +
+        "MOTIVO:\n" + motivo;
 
-    document.getElementById('resC').innerHTML =
-        '<b>Detalhamento:</b><br>' +
-        (multaTotal > 0 ? 'Multa Instalação: ' + f(multaTotal) + '<br>' : '') +
-        (prop > 0 ? 'Proporcional: ' + f(prop) + '<br>' : '') +
-        (atrasos > 0 ? 'Atrasos: ' + f(atrasos) + '<br>' : '') +
-        '<hr><i>"' + scriptFinal + '"</i>';
-
-    document.getElementById('resC').style.display = "block";
-    document.getElementById('cC').classList.remove('hide');
-    window.lastC = scriptFinal;
+    document.getElementById("resE").innerText = txt;
+    document.getElementById("resE").style.display = "block";
+    document.getElementById("cE").classList.remove("hide");
+    window.lastEnc = txt;
 }
 
 function gerarEnc() {
