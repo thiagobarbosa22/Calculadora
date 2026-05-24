@@ -81,15 +81,17 @@ function toggleCalc() {
 
 function f(v) { return "R$ " + Number(v).toFixed(2).replace('.', ','); }
 
-// ======= NOVA FUNÇÃO: GERAR CÁLCULO DA MULTA =======
+// ======= FUNÇÃO DA MULTA CORRIGIDA =======
 function gerarCalc() {
-    var fInstal = document.getElementById('fielInstal').value === 'sim';
-    
-    // Substitua essa variável pela lógica exata dos inputs do seu HTML.
-    // Exemplo de como montar o texto final:
-    var msgCalculo = "Fidelidade ativa: " + (fInstal ? "Sim" : "Não") + "\nValor da Multa: R$ 0,00"; 
-    
-    // Assumindo que você tem um <div id="resC"> para exibir o resultado e um <div id="cC"> pro botão
+    var fInstal = document.getElementById('fielInstal') ? document.getElementById('fielInstal').value : 'nao';
+    var msgCalculo = "";
+
+    if (fInstal === 'sim') {
+        msgCalculo = "Fidelidade: Ativa\nVerifique o valor da multa proporcional no sistema.";
+    } else {
+        msgCalculo = "Fidelidade: Inativa\nCliente isento de multa contratual.";
+    }
+
     var resC = document.getElementById('resC');
     if (resC) {
         resC.innerText = msgCalculo;
@@ -101,10 +103,8 @@ function gerarCalc() {
         btnCopyC.classList.remove('hide');
     }
 
-    // Alimenta a variável global que o seu botão "copy('c')" utiliza
     window.lastC = msgCalculo;
 }
-// ====================================================
 
 function gerarOferta() {
     var nome = document.getElementById('n').value || "Cliente";
@@ -146,7 +146,6 @@ function gerarOferta() {
     window.lastMsg = msg;
 }
 
-// Mantida apenas a versão principal do gerarEnc (a cópia foi removida)
 function gerarEnc() {
     var cidBruto = (document.getElementById("eCid").value || "").trim();
     var cidKey = cidBruto.toUpperCase();
