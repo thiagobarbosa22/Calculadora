@@ -81,23 +81,42 @@ function toggleCalc() {
 
 function f(v) { return "R$ " + Number(v).toFixed(2).replace('.', ','); }
 
-// ======= FUNÇÃO DA MULTA CORRIGIDA =======
-function gerarCalc() {
-    var fInstal = document.getElementById('fielInstal') ? document.getElementById('fielInstal').value : 'nao';
-    var msgCalculo = "";
+// ======= NOVA FUNÇÃO DE CÁLCULO DE MULTA CONECTADA AO BOTÃO =======
+function calc() {
+    var vA = Number(document.getElementById('vA').value) || 0;
+    var tabela = Number(document.getElementById('tabelaMulta').value) || 0;
+    var fielInstal = document.getElementById('fielInstal').value;
+    var mR = Number(document.getElementById('mR').value) || 0;
+    var dC = Number(document.getElementById('dC').value) || 0;
+    var vAtra = Number(document.getElementById('vAtra').value) || 0;
 
-    if (fInstal === 'sim') {
-        msgCalculo = "Fidelidade: Ativa\nVerifique o valor da multa proporcional no sistema.";
-    } else {
-        msgCalculo = "Fidelidade: Inativa\nCliente isento de multa contratual.";
+    var multaFidelidade = 0;
+    if (fielInstal === 'sim') {
+        multaFidelidade = tabela * mR;
     }
+
+    var proporcionalDias = (vA / 30) * dC;
+    var totalGeral = multaFidelidade + proporcionalDias + vAtra;
+
+    var msgCalculo = "--- DETALHAMENTO DE VALORES ---\n";
+    if (fielInstal === 'sim') {
+        msgCalculo += "• Multa de Instalação proporcional: " + f(multaFidelidade) + " (" + mR + " meses restantes)\n";
+    } else {
+        msgCalculo += "• Multa de Instalação: Isento\n";
+    }
+    msgCalculo += "• Consumo Proporcional (" + dC + " dias de uso): " + f(proporcionalDias) + "\n";
+    if (vAtra > 0) {
+        msgCalculo += "• Valores em Atraso: " + f(vAtra) + "\n";
+    }
+    msgCalculo += "-------------------------------\n";
+    msgCalculo += "💰 VALOR TOTAL PARA QUITAÇÃO: " + f(totalGeral);
 
     var resC = document.getElementById('resC');
     if (resC) {
         resC.innerText = msgCalculo;
         resC.style.display = "block";
     }
-    
+
     var btnCopyC = document.getElementById('cC');
     if (btnCopyC) {
         btnCopyC.classList.remove('hide');
@@ -124,7 +143,7 @@ function gerarOferta() {
     if (ab === "1") {
         msg = "Olá, " + nome + "! Fui direto ao ponto com a minha supervisão e consegui uma redução excelente para o seu plano. A partir de agora, sua mensalidade cai para " + f(novo) + " durante os próximos " + meses + " meses." + txtIsencao + " Isso significa uma economia real de " + f(econo) + " no seu bolso ao final do período. Podemos confirmar a aplicação desse desconto agora mesmo?";
     } else if (ab === "2") {
-        msg = nome + ", nós valorizamos muito o tempo que você está com a gente e não queremos de jeito nenhum que você tenha uma experiência desagradável ou pense em cancelar por conta de valores. Por isso, conversei com a diretoria e consegui liberar uma condição especial para mantermos nossa parceria: um desconto de " + f(desc) + " todo mês. Sua fatura passa a ser apenas " + f(novo) + " por " + meses + " meses." + txtIsencao + " O que acha de continuarmos juntos com esse novo valor?";
+        msg = nome + ", nós valorizamos muito o tempo que você está com a gente e não queremos de jeito nenhum que você tenha uma experiência desagradável ou pense em cancelar por conta de valores. Por isso, conversei com a diretoria e consegui liberar uma condition especial para mantermos nossa parceria: um desconto de " + f(desc) + " todo mês. Sua fatura passa a ser apenas " + f(novo) + " por " + meses + " meses." + txtIsencao + " O que acha de continuarmos juntos com esse novo valor?";
     } else if (ab === "3") {
         msg = "Como você é um cliente com um perfil excelente aqui na nossa base, " + nome + ", eu tenho acesso a uma oferta VIP que não fica disponível para todos. Consigo travar o valor da sua internet em apenas " + f(novo) + " por " + meses + " meses, garantindo a mesma qualidade de conexão com um custo bem menor." + txtIsencao + " É uma economia total de " + f(econo) + " para você. Vamos manter sua conexão ativa com essa condição exclusiva?";
     } else if (ab === "4") {
