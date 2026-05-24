@@ -72,7 +72,7 @@ Atendimento com prioridade máxima
 💸 2. DESCONTO (SE NECESSÁRIO)
 
 Alçada permitida:
-10 / 20 / 30 / 40 / 50 / 60
+5 / 10 / 20 / 30 / 40 / 50 / 60 (60 somente na regional central) 
 
 Regra:
 
@@ -87,9 +87,10 @@ Sem geração de fatura
 Motivos:
 
 Financeiro
-Mudança
+Mudança temporaria 
 Reforma
 Viagem
+Solicitação do cliente 
 🟡 5. STANDBY (USO ESTRATÉGICO)
 
 USAR SOMENTE quando cliente já contratou outra operadora
