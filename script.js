@@ -81,6 +81,31 @@ function toggleCalc() {
 
 function f(v) { return "R$ " + Number(v).toFixed(2).replace('.', ','); }
 
+// ======= NOVA FUNÇÃO: GERAR CÁLCULO DA MULTA =======
+function gerarCalc() {
+    var fInstal = document.getElementById('fielInstal').value === 'sim';
+    
+    // Substitua essa variável pela lógica exata dos inputs do seu HTML.
+    // Exemplo de como montar o texto final:
+    var msgCalculo = "Fidelidade ativa: " + (fInstal ? "Sim" : "Não") + "\nValor da Multa: R$ 0,00"; 
+    
+    // Assumindo que você tem um <div id="resC"> para exibir o resultado e um <div id="cC"> pro botão
+    var resC = document.getElementById('resC');
+    if (resC) {
+        resC.innerText = msgCalculo;
+        resC.style.display = "block";
+    }
+    
+    var btnCopyC = document.getElementById('cC');
+    if (btnCopyC) {
+        btnCopyC.classList.remove('hide');
+    }
+
+    // Alimenta a variável global que o seu botão "copy('c')" utiliza
+    window.lastC = msgCalculo;
+}
+// ====================================================
+
 function gerarOferta() {
     var nome = document.getElementById('n').value || "Cliente";
     var vAt = Number(document.getElementById('vA').value);
@@ -120,6 +145,8 @@ function gerarOferta() {
     document.getElementById('cO').classList.remove('hide');
     window.lastMsg = msg;
 }
+
+// Mantida apenas a versão principal do gerarEnc (a cópia foi removida)
 function gerarEnc() {
     var cidBruto = (document.getElementById("eCid").value || "").trim();
     var cidKey = cidBruto.toUpperCase();
@@ -154,16 +181,6 @@ function gerarEnc() {
     document.getElementById("resE").innerText = txt;
     document.getElementById("resE").style.display = "block";
     document.getElementById("cE").classList.remove("hide");
-    window.lastEnc = txt;
-}
-
-function gerarEnc() {
-    var cidInput = document.getElementById('eCid').value.toUpperCase();
-    var info = mapCidadesInfo[cidInput];
-    var txt = "SA: " + document.getElementById('eSA').value + "\nRegional: " + (info ? info.regional : '-') + " | Sub: " + (info ? info.subterritorio : '-') + "\nCidade: " + document.getElementById('eCid').value + "\nData: " + document.getElementById('eData').value + " (" + document.getElementById('ePer').value + ")\nRestrição: " + document.getElementById('eRest').value + "\nMotivo: " + document.getElementById('eRecl').value;
-    document.getElementById('resE').innerText = txt;
-    document.getElementById('resE').style.display = "block";
-    document.getElementById('cE').classList.remove('hide');
     window.lastEnc = txt;
 }
 
