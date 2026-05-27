@@ -22,7 +22,7 @@ window.onload = function() {
     datalistEnc.innerHTML = optsEnc;
     var htmlSel = '<option value="">— Selecione a cidade —</option>';
     todasCidades.forEach(function(cid) {
-        var esc = cid.replace(/&/g, '&amp;').replace(/"/g, '&quotBrowser;').replace(/</g, '&lt;');
+        var esc = cid.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
         htmlSel += '<option value="' + esc + '">' + esc + '</option>';
     });
     selOferta.innerHTML = htmlSel;
@@ -93,10 +93,10 @@ function toggleCalc() {
 
 function f(v) { return "R$ " + Number(v).toFixed(2).replace('.', ','); }
 
-// ======== LOGICA DE MULTA ALTERADA PARA MESES CHEIOS ========
+// ======== LOGICA DE MULTA SEM VALOR QUEBRADO (INTEIRA POR MES) ========
 function calc() {
     var vA = Number(document.getElementById('vA').value) || 0;
-    var tabela = Number(document.getElementById('tabelaMulta').value) || 0;
+    var tabela = Number(document.getElementById('tabelaMulta').value) || 0; // Ex: 350 ou 480
     var fielInstal = document.getElementById('fielInstal').value;
     var dC = Number(document.getElementById('dC').value) || 0;
     var vAtra = Number(document.getElementById('vAtra').value) || 0;
@@ -130,7 +130,8 @@ function calc() {
         if (mesesRestantes <= 0) {
             msgCalculo += "• Multa de Instalação: Isento (Fidelidade completada)\n";
         } else {
-            multaFidelidade = mesesRestantes * tabela;
+            // Divide o valor total por 12 e arredonda o resultado final para não gerar centavos quebrados
+            multaFidelidade = Math.round(mesesRestantes * (tabela / 12));
             msgCalculo += "• Multa de Instalação proporcional: " + f(multaFidelidade) + " (" + mesesRestantes + " meses restantes)\n";
         }
     } else {
@@ -179,9 +180,9 @@ function gerarOferta() {
     if (ab === "1") {
         msg = "Olá, " + nome + "! Fui direto ao ponto com a minha supervisão e consegui uma redução excelente para o seu plano. A partir de agora, sua mensalidade cai para " + f(novo) + " durante os próximos " + meses + " meses." + txtIsencao + " Isso significa uma economia real de " + f(econo) + " no seu bolso ao final do período. Podemos confirmar a aplicação desse desconto agora mesmo?";
     } else if (ab === "2") {
-        msg = nome + ", nós valorizamos muito o tempo que você está com a gente e não queremos de jeito nenhum que você tenha uma experiência desagradável ou pense em cancelar por conta de valores. Por isso, conversei com a diretoria e consegui liberar uma condição especial para mantermos nossa parceria: um desconto de " + f(desc) + " todo mês. Sua fatura passa a ser apenas " + f(novo) + " por " + meses + " meses." + txtIsencao + " O que acha de continuarmos juntos com esse novo valor?";
+        msg = nome + ", nós valorizamos muito o tempo que você está com a gente e não queremos de jeito nenhum que você tenha uma experiência desagradável ou pense em cancelar por conta de valores. Por isso, conversei com a diretoria e consegui liberar uma condition especial para mantermos nossa parceria: um desconto de " + f(desc) + " todo mês. Sua fatura passa a ser apenas " + f(novo) + " por " + meses + " meses." + txtIsencao + " O que acha de continuarmos juntos com esse novo valor?";
     } else if (ab === "3") {
-        msg = "Como você é um cliente com um perfil excelente aqui na nossa base, " + nome + ", eu tenho acesso a uma oferta VIP que não fica disponível para todos. Consigo travar o valor da sua internet em apenas " + f(novo) + " por " + meses + " meses, garantindo a mesma qualidade de conexão com um custo bem menor." + txtIsencao + " É uma economia total de " + f(econo) + " para você. Vamos manter sua conexão ativa com essa condição exclusiva?";
+        msg = "Como você é um cliente com um perfil excelente aqui na nossa base, " + nome + ", eu tenho acesso a uma oferta VIP que não fica disponível para todos. Consigo travar o valor da sua internet em apenas " + f(novo) + " por " + meses + " meses, garantindo a mesma qualidade de conexão com um custo bem menor." + txtIsencao + " É uma economia total de " + f(econo) + " para você. Vamos manter sua conexão ativa com essa condition exclusiva?";
     } else if (ab === "4") {
         msg = nome + ", essa é uma oportunidade de momento e eu realmente preciso da sua confirmação agora para conseguir segurar esse valor no sistema. Consigo fechar a sua mensalidade em " + f(novo) + " pelos próximos " + meses + " meses, mas essa oferta expira se encerrarmos o atendimento." + txtIsencao + " É a melhor condition que temos disponível hoje. Posso dar o \"ok\" aqui e já aplicar o desconto na sua próxima fatura?";
     } else if (ab === "5") {
@@ -191,7 +192,7 @@ function gerarOferta() {
     } else if (ab === "7") {
         msg = nome + ", entendo que essa oscilação impacta sua rotina e isso não pode acontecer. Para resolver, vou priorizar um técnico especializado ainda hoje para corrigir sua fibra. Como pedido de desculpas pelo transtorno, apliquei um desconto e sua mensalidade cai para " + f(novo) + " por " + meses + " meses." + txtIsencao + " Vou acompanhar tudo pessoalmente até que sua navegação esteja perfeita. Combinado?";
     } else if (ab === "8") {
-        msg = "Peço sinceras desculpas pela falta de conexão, " + nome + ". Sei o quanto você precisa da internet e já agendei um técnico em caráter de urgência para restabelecer seu sinal agora. Para compensar esse período sem o serviço, travei sua fatura em " + f(novo) + " pelos próximos " + meses + " meses." + txtIsencao + " Meu foco total é deixar você online novamente com a melhor condição possível. Podemos seguir assim?";
+        msg = "Peço sinceras desculpas pela falta de conexão, " + nome + ". Sei o quanto você precisa da internet e já agendei um técnico em caráter de urgência para restabelecer seu sinal agora. Para compensar esse período sem o serviço, travei sua fatura em " + f(novo) + " pelos próximos " + meses + " meses." + txtIsencao + " Meu foco total é deixar você online novamente com a melhor condition possível. Podemos seguir assim?";
     }
 
     var res = document.getElementById('resO');
