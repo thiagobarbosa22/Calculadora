@@ -26,6 +26,13 @@ window.onload = function() {
         htmlSel += '<option value="' + esc + '">' + esc + '</option>';
     });
     selOferta.innerHTML = htmlSel;
+    
+    var inputCanc = document.getElementById('dCanc');
+    if (inputCanc) {
+        var hoje = new Date().toISOString().split('T')[0];
+        inputCanc.value = hoje;
+    }
+    
     checkCid();
 };
 
@@ -49,17 +56,19 @@ function checkCid() {
     var o60 = document.getElementById('o60');
     var sel = document.getElementById('vD');
 
-    o50.disabled = false;
+    if (o50) o50.disabled = false;
 
     if (info) {
-        o60.disabled = !isCentral;
+        if (o60) o60.disabled = !isCentral;
     } else {
-        o60.disabled = true;
+        if (o60) o60.disabled = true;
     }
 
-    if (o60.disabled && sel.value === '60') {
+    if (o60 && o60.disabled && sel && sel.value === '60') {
         sel.value = '50';
     }
+
+    if (!box) return;
 
     if (info) {
         box.style.display = 'block';
@@ -76,34 +85,58 @@ function checkCid() {
 
 function toggleCalc() {
     var fInstal = document.getElementById('fielInstal').value === 'sim';
-    document.getElementById('boxMeses').classList.toggle('hide', !fInstal);
+    var boxDatas = document.getElementById('boxDatasFidelidade');
+    if (boxDatas) {
+        boxDatas.classList.toggle('hide', !fInstal);
+    }
 }
 
 function f(v) { return "R$ " + Number(v).toFixed(2).replace('.', ','); }
 
-// ======= NOVA FUNÇÃO DE CÁLCULO DE MULTA CONECTADA AO BOTÃO =======
 function calc() {
     var vA = Number(document.getElementById('vA').value) || 0;
     var tabela = Number(document.getElementById('tabelaMulta').value) || 0;
     var fielInstal = document.getElementById('fielInstal').value;
-    var mR = Number(document.getElementById('mR').value) || 0;
     var dC = Number(document.getElementById('dC').value) || 0;
     var vAtra = Number(document.getElementById('vAtra').value) || 0;
 
     var multaFidelidade = 0;
+    var msgCalculo = "--- DETALHAMENTO DE VALORES ---\n";
+
     if (fielInstal === 'sim') {
-        multaFidelidade = tabela * mR;
+        var dInstalVal = document.getElementById('dInstal').value;
+        var dCancVal = document.getElementById('dCanc').value;
+
+        if (!dInstalVal || !dCancVal) {
+            alert("Por favor, preencha as datas de Instalação e Saída para calcular a multa exata.");
+            return;
+        }
+
+        var dInstal = new Date(dInstalVal + "T00:00:00");
+        var dCanc = new Date(dCancVal + "T00:00:00");
+
+        var dFim = new Date(dInstal);
+        dFim.setFullYear(dFim.getFullYear() + 1);
+
+        var diffTime = dFim.getTime() - dCanc.getTime();
+        var diffDays = Math.ceil(diffTime / (1000 * 3600 * 24));
+
+        if (diffDays <= 0) {
+            msgCalculo += "• Multa de Instalação: Isento (Fidelidade completada)\n";
+        } else {
+            var valorPorDia = tabela / 30;
+            multaFidelidade = diffDays * valorPorDia;
+            var mesesAprox = (diffDays / 30).toFixed(1);
+
+            msgCalculo += "• Multa de Instalação proporcional: " + f(multaFidelidade) + " (" + diffDays + " dias faltantes / ~" + mesesAprox + " meses)\n";
+        }
+    } else {
+        msgCalculo += "• Multa de Instalação: Isento\n";
     }
 
     var proporcionalDias = (vA / 30) * dC;
     var totalGeral = multaFidelidade + proporcionalDias + vAtra;
 
-    var msgCalculo = "--- DETALHAMENTO DE VALORES ---\n";
-    if (fielInstal === 'sim') {
-        msgCalculo += "• Multa de Instalação proporcional: " + f(multaFidelidade) + " (" + mR + " meses restantes)\n";
-    } else {
-        msgCalculo += "• Multa de Instalação: Isento\n";
-    }
     msgCalculo += "• Consumo Proporcional (" + dC + " dias de uso): " + f(proporcionalDias) + "\n";
     if (vAtra > 0) {
         msgCalculo += "• Valores em Atraso: " + f(vAtra) + "\n";
@@ -143,7 +176,7 @@ function gerarOferta() {
     if (ab === "1") {
         msg = "Olá, " + nome + "! Fui direto ao ponto com a minha supervisão e consegui uma redução excelente para o seu plano. A partir de agora, sua mensalidade cai para " + f(novo) + " durante os próximos " + meses + " meses." + txtIsencao + " Isso significa uma economia real de " + f(econo) + " no seu bolso ao final do período. Podemos confirmar a aplicação desse desconto agora mesmo?";
     } else if (ab === "2") {
-        msg = nome + ", nós valorizamos muito o tempo que você está com a gente e não queremos de jeito nenhum que você tenha uma experiência desagradável ou pense em cancelar por conta de valores. Por isso, conversei com a diretoria e consegui liberar uma condition especial para mantermos nossa parceria: um desconto de " + f(desc) + " todo mês. Sua fatura passa a ser apenas " + f(novo) + " por " + meses + " meses." + txtIsencao + " O que acha de continuarmos juntos com esse novo valor?";
+        msg = nome + ", nós valorizamos muito o tempo que você está com a gente e não queremos de jeito nenhum que você tenha uma experiência desagradável ou pense em cancelar por conta de valores. Por isso, conversei com a diretoria e consegui liberar uma condição especial para mantermos nossa parceria: um desconto de " + f(desc) + " todo mês. Sua fatura passa a ser apenas " + f(novo) + " por " + meses + " meses." + txtIsencao + " O que acha de continuarmos juntos com esse novo valor?";
     } else if (ab === "3") {
         msg = "Como você é um cliente com um perfil excelente aqui na nossa base, " + nome + ", eu tenho acesso a uma oferta VIP que não fica disponível para todos. Consigo travar o valor da sua internet em apenas " + f(novo) + " por " + meses + " meses, garantindo a mesma qualidade de conexão com um custo bem menor." + txtIsencao + " É uma economia total de " + f(econo) + " para você. Vamos manter sua conexão ativa com essa condição exclusiva?";
     } else if (ab === "4") {
@@ -159,12 +192,18 @@ function gerarOferta() {
     }
 
     var res = document.getElementById('resO');
-    res.innerHTML = '<i>"' + msg + '"</i>';
-    res.style.display = "block";
-    document.getElementById('cO').classList.remove('hide');
+    if (res) {
+        res.innerHTML = '<i>"' + msg + '"</i>';
+        res.style.display = "block";
+    }
+    var btnCopyO = document.getElementById('cO');
+    if (btnCopyO) {
+        btnCopyO.classList.remove('hide');
+    }
     window.lastMsg = msg;
 }
 
+// ======== FORMATO DO ENCAIXE ATUALIZADO ========
 function gerarEnc() {
     var cidBruto = (document.getElementById("eCid").value || "").trim();
     var cidKey = cidBruto.toUpperCase();
@@ -174,36 +213,38 @@ function gerarEnc() {
     var regional = info ? info.regional : "-";
     var sub = info ? info.subterritorio : "-";
 
-    var dataVal = document.getElementById("eData").value;
-    var periodo = document.getElementById("ePer").value || "";
-    var diaFormatado = "";
-    if (dataVal && /^\d{4}-\d{2}-\d{2}$/.test(dataVal)) {
-        var p = dataVal.split("-");
-        diaFormatado = p[2] + "/" + p[1] + "/" + p[0];
-        if (periodo) diaFormatado += " — " + periodo;
-    } else {
-        diaFormatado = (dataVal || "-") + (periodo ? " — " + periodo : "");
-    }
+    var dataVal = document.getElementById("eData").value || "-";
+    var periodo = (document.getElementById("ePer").value || "").toUpperCase();
+    var dataFormatada = dataVal + (periodo ? " (" + periodo + ")" : "");
 
     var restr = (document.getElementById("eRest").value || "").trim();
     var motivo = (document.getElementById("eRecl").value || "").trim();
 
     var txt =
-        "SA:\n" + sa + "\n\n" +
-        "REGIONAL:\n" + regional + "\n\n" +
-        "SUB:\n" + sub + "\n\n" +
-        "DIA:\n" + diaFormatado + "\n\n" +
-        "RESTRIÇAO:\n" + restr + "\n\n" +
-        "MOTIVO:\n" + motivo;
+        "SA: " + sa + "\n" +
+        "Regional: " + regional + " | Sub: " + sub + "\n" +
+        "Cidade: " + cidBruto + "\n" +
+        "Data: " + dataFormatada + "\n" +
+        "Restrição: " + restr + "\n" +
+        "Motivo: " + motivo;
 
-    document.getElementById("resE").innerText = txt;
-    document.getElementById("resE").style.display = "block";
-    document.getElementById("cE").classList.remove("hide");
+    var resE = document.getElementById("resE");
+    if (resE) {
+        resE.innerText = txt;
+        resE.style.display = "block";
+    }
+    var btnCopyE = document.getElementById("cE");
+    if (btnCopyE) {
+        btnCopyE.classList.remove("hide");
+    }
     window.lastEnc = txt;
 }
+// ===============================================
 
 function copy(t) {
     var texto = (t==='o' ? window.lastMsg : (t==='c' ? window.lastC : window.lastEnc));
-    navigator.clipboard.writeText(texto);
-    alert("Copiado!");
+    if (texto) {
+        navigator.clipboard.writeText(texto);
+        alert("Copiado!");
+    }
 }
