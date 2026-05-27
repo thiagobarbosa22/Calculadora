@@ -32,7 +32,6 @@
                 <div><label>💰 Plano Atual</label><input type="number" id="vA" value="109.99"></div>
                 <div><label>📉 Desconto</label>
                     <select id="vD">
-                        <option value="5">R$ 5,00</option><option value="20">R$ 20,00</option>
                         <option value="10">R$ 10,00</option><option value="20">R$ 20,00</option>
                         <option value="30">R$ 30,00</option><option value="40">R$ 40,00</option>
                         <option value="50" id="o50">R$ 50,00</option>
@@ -72,13 +71,14 @@
             <label>🛡️ Fidelidade Instalação?</label>
             <select id="fielInstal" onchange="toggleCalc()"><option value="nao">Não</option><option value="sim">Sim</option></select>
 
-            <div class="row">
-                <div id="boxMeses" class="hide">
-                    <label>⏳ Meses Restantes</label>
-                    <input type="number" id="mR" value="6">
+            <div id="boxDatasFidelidade" class="hide" style="margin-top: 10px;">
+                <div class="row">
+                    <div><label>📅 Data Instalação</label><input type="date" id="dInstal"></div>
+                    <div><label>📅 Data Saída</label><input type="date" id="dCanc"></div>
                 </div>
             </div>
-            <div class="row">
+
+            <div class="row" style="margin-top: 10px;">
                 <div><label>🗓️ Dias de Uso</label><input type="number" id="dC" value="15"></div>
                 <div><label>💵 Atrasos (R$)</label><input type="number" id="vAtra" value="0"></div>
             </div>
@@ -105,10 +105,8 @@
     </div>
 </div>
 
-<datalist id="cidades_oferta">
-    <option value="Americana"> <option value="Araraquara"> ...
-</datalist>
-<datalist id="listaCidadesEnc"></datalist> <script src="script.js"></script>
+<datalist id="listaCidadesEnc"></datalist>
+<script src="script.js"></script>
 
 <div id="ia-container">
     <div id="ia-window">
