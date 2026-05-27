@@ -22,7 +22,7 @@ window.onload = function() {
     datalistEnc.innerHTML = optsEnc;
     var htmlSel = '<option value="">— Selecione a cidade —</option>';
     todasCidades.forEach(function(cid) {
-        var esc = cid.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+        var esc = cid.replace(/&/g, '&amp;').replace(/"/g, '&quotBrowser;').replace(/</g, '&lt;');
         htmlSel += '<option value="' + esc + '">' + esc + '</option>';
     });
     selOferta.innerHTML = htmlSel;
@@ -93,6 +93,7 @@ function toggleCalc() {
 
 function f(v) { return "R$ " + Number(v).toFixed(2).replace('.', ','); }
 
+// ======== LOGICA DE MULTA ALTERADA PARA MESES CHEIOS ========
 function calc() {
     var vA = Number(document.getElementById('vA').value) || 0;
     var tabela = Number(document.getElementById('tabelaMulta').value) || 0;
@@ -115,20 +116,22 @@ function calc() {
         var dInstal = new Date(dInstalVal + "T00:00:00");
         var dCanc = new Date(dCancVal + "T00:00:00");
 
-        var dFim = new Date(dInstal);
-        dFim.setFullYear(dFim.getFullYear() + 1);
+        // Conta quantos aniversários mensais ainda vão acontecer até completar 12 meses
+        var mesesRestantes = 0;
+        for (var m = 1; m <= 12; m++) {
+            var checkDate = new Date(dInstal.getTime());
+            checkDate.setMonth(checkDate.getMonth() + m);
+            
+            if (checkDate.getTime() > dCanc.getTime()) {
+                mesesRestantes++;
+            }
+        }
 
-        var diffTime = dFim.getTime() - dCanc.getTime();
-        var diffDays = Math.ceil(diffTime / (1000 * 3600 * 24));
-
-        if (diffDays <= 0) {
+        if (mesesRestantes <= 0) {
             msgCalculo += "• Multa de Instalação: Isento (Fidelidade completada)\n";
         } else {
-            var valorPorDia = tabela / 30;
-            multaFidelidade = diffDays * valorPorDia;
-            var mesesAprox = (diffDays / 30).toFixed(1);
-
-            msgCalculo += "• Multa de Instalação proporcional: " + f(multaFidelidade) + " (" + diffDays + " dias faltantes / ~" + mesesAprox + " meses)\n";
+            multaFidelidade = mesesRestantes * tabela;
+            msgCalculo += "• Multa de Instalação proporcional: " + f(multaFidelidade) + " (" + mesesRestantes + " meses restantes)\n";
         }
     } else {
         msgCalculo += "• Multa de Instalação: Isento\n";
@@ -180,7 +183,7 @@ function gerarOferta() {
     } else if (ab === "3") {
         msg = "Como você é um cliente com um perfil excelente aqui na nossa base, " + nome + ", eu tenho acesso a uma oferta VIP que não fica disponível para todos. Consigo travar o valor da sua internet em apenas " + f(novo) + " por " + meses + " meses, garantindo a mesma qualidade de conexão com um custo bem menor." + txtIsencao + " É uma economia total de " + f(econo) + " para você. Vamos manter sua conexão ativa com essa condição exclusiva?";
     } else if (ab === "4") {
-        msg = nome + ", essa é uma oportunidade de momento e eu realmente preciso da sua confirmação agora para conseguir segurar esse valor no sistema. Consigo fechar a sua mensalidade em " + f(novo) + " pelos próximos " + meses + " meses, mas essa oferta expira se encerrarmos o atendimento." + txtIsencao + " É a melhor condição que temos disponível hoje. Posso dar o \"ok\" aqui e já aplicar o desconto na sua próxima fatura?";
+        msg = nome + ", essa é uma oportunidade de momento e eu realmente preciso da sua confirmação agora para conseguir segurar esse valor no sistema. Consigo fechar a sua mensalidade em " + f(novo) + " pelos próximos " + meses + " meses, mas essa oferta expira se encerrarmos o atendimento." + txtIsencao + " É a melhor condition que temos disponível hoje. Posso dar o \"ok\" aqui e já aplicar o desconto na sua próxima fatura?";
     } else if (ab === "5") {
         msg = nome + ", fazendo as contas aqui comigo, o custo-benefício de continuar com a gente com esse novo desconto é imbatível. Você vai pagar apenas " + f(novo) + " por mês durante " + meses + " meses." + txtIsencao + " Na ponta do lápis, é uma economia de " + f(econo) + " sem precisar passar pela dor de cabeça de trocar de operadora ou fazer nova instalação. Fica muito mais vantajoso. Vamos aproveitar esse novo valor?";
     } else if (ab === "6") {
@@ -203,7 +206,6 @@ function gerarOferta() {
     window.lastMsg = msg;
 }
 
-// ======== FORMATO DO ENCAIXE ATUALIZADO ========
 function gerarEnc() {
     var cidBruto = (document.getElementById("eCid").value || "").trim();
     var cidKey = cidBruto.toUpperCase();
@@ -239,7 +241,6 @@ function gerarEnc() {
     }
     window.lastEnc = txt;
 }
-// ===============================================
 
 function copy(t) {
     var texto = (t==='o' ? window.lastMsg : (t==='c' ? window.lastC : window.lastEnc));
