@@ -17,7 +17,6 @@ var dadosRegionais = {
     } 
 };
 
-// Alimenta o datalist com todas as cidades mapeadas
 window.onload = function() {
     var datalist = document.getElementById('cidades_geral');
     var options = '';
@@ -31,7 +30,6 @@ window.onload = function() {
     datalist.innerHTML = options;
 };
 
-// Alternância entre abas da ferramenta
 function tab(t) {
     document.getElementById('v-ret').classList.toggle('hide', t !== 'ret');
     document.getElementById('v-calc').classList.toggle('hide', t !== 'calc');
@@ -41,7 +39,6 @@ function tab(t) {
     document.getElementById('t3').classList.toggle('active', t === 'enc');
 }
 
-// Libera desconto de 60 se pertencer à regional Central
 function checkCid() {
     var cidDigitada = document.getElementById('cid').value.trim();
     var opt60 = document.getElementById('o60');
@@ -67,10 +64,9 @@ function checkCid() {
     }
 }
 
-// Formatação monetária PT-BR
 function f(v) { return "R$ " + Number(v).toFixed(2).replace('.', ','); }
 
-// Motor de geração de scripts de retenção reduzidos com SVAs dinâmicos
+// Motor de geração de scripts com separação de desconto apenas no Plano
 function gerarOferta() {
     var nome = document.getElementById('n').value || "Cliente";
     var vAt = Number(document.getElementById('vA').value);
@@ -81,40 +77,63 @@ function gerarOferta() {
 
     var totalSva = 0;
     var svasSelecionados = [];
+    
+    // Processamento e soma dos SVAs
     document.querySelectorAll('.sva-chk:checked').forEach(function(chk) {
-        totalSva += Number(chk.value);
+        var valorSvaLimpo = parseFloat(chk.value.replace(',', '.'));
+        totalSva += valorSvaLimpo;
         svasSelecionados.push(chk.getAttribute('data-nome'));
     });
 
-    var novo = (vAt - desc) + totalSva;
-    var econo = desc * meses;
+    // Desconto aplicado EXCLUSIVAMENTE sobre o valor plano base
+    var planoComDesconto = vAt - desc;
+    var novo = planoComDesconto + totalSva;
 
     var txtIsencao = "";
-    if (isencao === "1") txtIsencao = " + 1 mês grátis.";
-    if (isencao === "2") txtIsencao = " + 2 meses grátis.";
-
-    var txtSva = "";
-    if (svasSelecionados.length > 0) {
-        txtSva = " c/ " + svasSelecionados.join(", ");
-    }
+    if (isencao === "1") txtIsencao = " com mais 1 mês grátis";
+    if (isencao === "2") txtIsencao = " com mais 2 meses grátis";
 
     var msg = "";
-    if (ab === "1") {
-        msg = "Olá, " + nome + "! Reduzi seu plano para " + f(novo) + " por " + meses + " meses" + txtSva + "." + txtIsencao + " Economia de " + f(econo) + ". Podemos fechar?";
-    } else if (ab === "2") {
-        msg = nome + ", valorizamos sua parceria. Liberamos um desconto fixo e seu plano fica apenas " + f(novo) + " por " + meses + " meses" + txtSva + "." + txtIsencao + " Vamos continuar juntos?";
-    } else if (ab === "3") {
-        msg = "Oferta VIP para você, " + nome + ": plano fixado em " + f(novo) + " por " + meses + " meses" + txtSva + "." + txtIsencao + " Atualizamos seu cadastro?";
-    } else if (ab === "4") {
-        msg = nome + ", para fecharmos agora: reduzi sua mensalidade para " + f(novo) + " por " + meses + " meses" + txtSva + "." + txtIsencao + " Posso lançar o desconto na próxima fatura?";
-    } else if (ab === "5") {
-        msg = nome + ", o custo-benefício ficou excelente: " + f(novo) + " durante " + meses + " meses" + txtSva + "." + txtIsencao + " Bem melhor que a dor de cabeça de trocar de operadora. Vamos manter?";
-    } else if (ab === "6") {
-        msg = "Olha, " + nome + ", cheguei no limite do sistema: o valor final fica em " + f(novo) + " por " + meses + " meses" + txtSva + "." + txtIsencao + " Aceita essa condição para continuar conosco?";
-    } else if (ab === "7") {
-        msg = "Entendo a instabilidade, " + nome + ". Agendei um técnico especializado e, pelo transtorno, reduzi sua fatura para " + f(novo) + " por " + meses + " meses" + txtSva + "." + txtIsencao + " Confirmado?";
-    } else if (ab === "8") {
-        msg = "Desculpe pelo período sem conexão, " + nome + ". Já acionei a equipe técnica emergencial e reduzi sua mensalidade para " + f(novo) + " por " + meses + " meses" + txtSva + "." + txtIsencao + " Podemos seguir?";
+    
+    // Condicional: Se houver SVA ativo, apresenta a quebra (Plano com desconto + SVA como oferta)
+    if (totalSva > 0) {
+        var svasTexto = svasSelecionados.join(", ");
+        if (ab === "1") {
+            msg = "Olá, " + nome + "! Reduzi seu plano para " + f(planoComDesconto) + " e incluí o aplicativo " + svasTexto + " por " + f(totalSva) + " como uma oferta especial, ficando tudo por apenas " + f(novo) + " fixo por " + meses + " meses" + txtIsencao + ". Podemos fechar?";
+        } else if (ab === "2") {
+            msg = "Oi, " + nome + "! Conseguimos deixar seu plano por " + f(planoComDesconto) + " e adicionamos o aplicativo " + svasTexto + " por " + f(totalSva) + " como um benefício, totalizando apenas " + f(novo) + " por " + meses + " meses" + txtIsencao + " valorizando seu tempo com a gente. Vamos continuar juntos?";
+        } else if (ab === "3") {
+            msg = "Oferta exclusiva para você, " + nome + ": seu plano fica por " + f(planoComDesconto) + " + o aplicativo " + svasTexto + " por " + f(totalSva) + " como cortesia, fechando tudo por apenas " + f(novo) + " por " + meses + " meses" + txtIsencao + ". Posso salvar no cadastro?";
+        } else if (ab === "4") {
+            msg = "Para fecharmos agora, " + nome + ": baixei seu plano para " + f(planoComDesconto) + " e adicionei o aplicativo " + svasTexto + " por " + f(totalSva) + ", dando apenas " + f(novo) + " fixo por " + meses + " meses" + txtIsencao + ". Posso aplicar?";
+        } else if (ab === "5") {
+            msg = nome + ", o melhor custo-benefício ficou assim: " + f(planoComDesconto) + " do plano + " + f(totalSva) + " do aplicativo " + svasTexto + " como oferta, totalizando " + f(novo) + " por " + meses + " meses" + txtIsencao + ". Vale muito mais a pena manter. Vamos fechar?";
+        } else if (ab === "6") {
+            msg = "Olha, " + nome + ", cheguei no limite: o plano fica por " + f(planoComDesconto) + " e o aplicativo " + svasTexto + " por " + f(totalSva) + " como oferta especial, dando o valor final de " + f(novo) + " por " + meses + " meses" + txtIsencao + ". Garante a sua continuidade?";
+        } else if (ab === "7") {
+            msg = "Entendo o ocorrido, " + nome + ". Já agendei o técnico e, pelo transtorno, deixei seu plano por " + f(planoComDesconto) + " com o aplicativo " + svasTexto + " por " + f(totalSva) + " como oferta incluso, totalizando " + f(novo) + " por " + meses + " meses. Confirmado?";
+        } else if (ab === "8") {
+            msg = "Desculpe pela instabilidade, " + nome + ". Acionei o suporte emergencial e fixei seu plano em " + f(planoComDesconto) + " + " + f(totalSva) + " do aplicativo " + svasTexto + " como benefício, totalizando " + f(novo) + " por " + meses + " meses. Podemos seguir?";
+        }
+    } else {
+        // Fluxo padrão sem nenhum SVA selecionado
+        if (ab === "1") {
+            msg = "Olá, " + nome + "! Reduzi seu plano para apenas " + f(novo) + " fixo por " + meses + " meses" + txtIsencao + ". Podemos fechar?";
+        } else if (ab === "2") {
+            msg = "Oi, " + nome + "! Conseguimos manter seu plano por apenas " + f(novo) + " por " + meses + " meses" + txtIsencao + " valorizando seu tempo com a gente. Vamos continuar juntos?";
+        } else if (ab === "3") {
+            msg = "Oferta exclusiva para você, " + nome + ": seu plano foi atualizado para " + f(novo) + " por " + meses + " meses" + txtIsencao + ". Posso salvar no cadastro?";
+        } else if (ab === "4") {
+            msg = "Para fecharmos agora, " + nome + ": reduzi sua mensalidade para apenas " + f(novo) + " por " + meses + " meses" + txtIsencao + ". Posso aplicar o desconto?";
+        } else if (ab === "5") {
+            msg = nome + ", seu melhor custo-benefício ficou assim: " + f(novo) + " por " + meses + " meses" + txtIsencao + ". Vale muito mais a pena manter. Vamos fechar?";
+        } else if (ab === "6") {
+            msg = "Olha, " + nome + ", cheguei no limite do sistema: o valor final fica em " + f(novo) + " por " + meses + " meses" + txtIsencao + ". Garante a sua continuidade?";
+        } else if (ab === "7") {
+            msg = "Entendo o ocorrido, " + nome + ". Já agendei o técnico e, pelo transtorno, reduzi sua fatura para " + f(novo) + " por " + meses + " meses. Confirmado?";
+        } else if (ab === "8") {
+            msg = "Desculpe pela instabilidade, " + nome + ". Acionei o suporte emergencial e reduzi seu plano para " + f(novo) + " por " + meses + " meses. Podemos seguir?";
+        }
     }
 
     var res = document.getElementById('resO');
@@ -124,7 +143,6 @@ function gerarOferta() {
     window.lastMsg = msg;
 }
 
-// Cálculo tradicional de multas com meses restantes visíveis
 function calc() {
     var nome = document.getElementById('n').value || "cliente";
     var mR = Number(document.getElementById('mR').value);
@@ -139,7 +157,7 @@ function calc() {
     var total = multaTotal + prop + atrasos;
 
     var componentes = [];
-    if (multaTotal > 0) componentes.push("multa contratual (" + mR + " meses)");
+    if (multaTotal > 0) componentes.push("multa contratual (" + mR + " meses restantes)");
     if (prop > 0) componentes.push("proporcional de uso");
     if (atrasos > 0) componentes.push("faturas em aberto");
 
@@ -148,7 +166,8 @@ function calc() {
 
     document.getElementById('resC').innerHTML = 
         '<b>Detalhamento:</b><br>' +
-        (multaTotal > 0 ? 'Multa Fidelidade: ' + f(multaTotal) + '<br>' : '') +
+        'Meses Restantes: ' + mR + ' meses<br>' +
+        (multaTotal > 0 ? 'Multas: ' + f(multaTotal) + '<br>' : '') +
         (prop > 0 ? 'Proporcional: ' + f(prop) + '<br>' : '') +
         (atrasos > 0 ? 'Atrasos: ' + f(atrasos) + '<br>' : '') +
         '<hr><i>"' + scriptFinal + '"</i>';
@@ -158,7 +177,6 @@ function calc() {
     window.lastC = scriptFinal;
 }
 
-// Geração do espelho de encaixe de visita técnica
 function gerarEnc() {
     var txt = "SA: " + document.getElementById('eSA').value + "\nCidade: " + document.getElementById('eCid').value + "\nData: " + document.getElementById('eData').value + " (" + document.getElementById('ePer').value + ")\nRestrição: " + document.getElementById('eRest').value + "\nMotivo: " + document.getElementById('eRecl').value;
     document.getElementById('resE').innerText = txt;
@@ -167,20 +185,17 @@ function gerarEnc() {
     window.lastEnc = txt;
 }
 
-// Manipulação do Clipboard para cópia rápida
 function copy(t) {
     var texto = (t === 'o' ? window.lastMsg : (t === 'c' ? window.lastC : window.lastEnc));
     navigator.clipboard.writeText(texto);
     alert("Copiado com sucesso!");
 }
 
-// Controle de Visibilidade da Janela do Assistente Dolly
 window.toggleIA = function () {
     const win = document.getElementById('ia-window');
     win.style.display = (win.style.display === 'flex') ? 'none' : 'flex';
 };
 
-// Requisição e envio de mensagens para o endpoint do Render da IA
 window.askGemini = async function () {
     const input = document.getElementById('ia-input');
     const chat = document.getElementById('ia-chat');
@@ -214,7 +229,6 @@ window.askGemini = async function () {
     chat.scrollTop = chat.scrollHeight;
 };
 
-// Monitora pressionamento da tecla Enter no input da IA
 document.getElementById('ia-input')?.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') window.askGemini();
 });
