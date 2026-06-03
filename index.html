@@ -3,8 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Desktop Retenção</title>
+    <title>Desktop Retenção - Black Edition v8</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Organização dos SVAs na interface */
+        .sva-group { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 8px; 
+            margin-top: 5px; 
+            background: rgba(0,0,0,0.15); 
+            padding: 10px; 
+            border-radius: 8px; 
+            max-height: 150px; 
+            overflow-y: auto; 
+        }
+        .sva-item { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+        .sva-item input { width: auto; margin: 0; }
+    </style>
 </head>
 <body class="dark">
 
@@ -21,29 +37,68 @@
         <button id="t3" onclick="tab('enc')">📅 Encaixe</button>
     </div>
 
+    <!-- ABA OFERTAS -->
     <div id="v-ret">
         <div class="section">
             <label>👤 Nome do Cliente</label>
             <input type="text" id="n" placeholder="Ex: João Silva">
+
             <label>🏙️ Cidade</label>
-            <input list="listaCidadesEnc" id="cid" oninput="checkCid()" placeholder="Selecione a cidade">
-            <div id="concorrencia" class="alert-box"></div>
+            <input list="cidades_geral" id="cid" oninput="checkCid()" placeholder="Selecione a cidade">
+            <div id="conconrrencia" class="alert-box" style="display:none; background: rgba(255, 152, 0, 0.1); color: #ef6c00; padding: 10px; border-radius: 8px; font-size: 12px; border-left: 4px solid var(--alert); margin-bottom: 12px;">🚀 <b>Região Central:</b> Desconto de R$ 60,00 Liberado!</div>
+
             <div class="row">
-                <div><label>💰 Plano Atual</label><input type="number" id="vA" value="109.99"></div>
-                <div><label>📉 Desconto</label>
+                <div>
+                    <label>💰 Plano Atual</label>
+                    <input type="number" id="vA" value="109.99">
+                </div>
+                <div>
+                    <label>📉 Desconto</label>
                     <select id="vD">
-                        <option value="10">R$ 10,00</option><option value="20">R$ 20,00</option>
-                        <option value="30">R$ 30,00</option><option value="40">R$ 40,00</option>
-                        <option value="50" id="o50">R$ 50,00</option>
-                        <option value="60" id="o60" disabled>R$ 60,00 — Regional Central</option>
+                        <option value="10">R$ 10,00</option>
+                        <option value="20">R$ 20,00</option>
+                        <option value="30">R$ 30,00</option>
+                        <option value="40">R$ 40,00</option>
+                        <option value="50">R$ 50,00</option>
+                        <option value="60" id="o60" disabled>R$ 60,00*</option>
                     </select>
                 </div>
             </div>
+
             <div class="row">
-                <div><label>⏳ Prazo</label><select id="prazo"><option value="6">6 Meses</option><option value="12">12 Meses</option></select></div>
-                <div><label>🎁 Isenção</label><select id="isencao"><option value="0">Nenhuma</option><option value="1">1 Mês Grátis</option><option value="2">2 Meses Grátis</option></select></div>
+                <div>
+                    <label>⏳ Prazo</label>
+                    <select id="prazo">
+                        <option value="6">6 Meses</option>
+                        <option value="12">12 Meses</option>
+                    </select>
+                </div>
+                <div>
+                    <label>🎁 Isenção</label>
+                    <select id="isencao">
+                        <option value="0">Nenhuma</option>
+                        <option value="1">1 Mês Grátis</option>
+                        <option value="2">2 Meses Grátis</option>
+                    </select>
+                </div>
             </div>
-            <label>🎭 Abordagem</label>
+
+            <!-- Lista de SVAs baseado na imagem -->
+            <label>➕ Adicionar SVAs (Aplicativos)</label>
+            <div class="sva-group">
+                <div class="sva-item"><input type="checkbox" class="sva-chk" value="19,99" data-nome="GloboPlay Anúncios 2026"> <span>GloboPlay Anúncios</span></div>
+                <div class="sva-item"><input type="checkbox" class="sva-chk" value="29,99" data-nome="Max Standard 2026 (HBO)"> <span>Max Standard (HBO)</span></div>
+                <div class="sva-item"><input type="checkbox" class="sva-chk" value="44,99" data-nome="Disney+"> <span>Disney+</span></div>
+                <div class="sva-item"><input type="checkbox" class="sva-chk" value="19,99" data-nome="Kids Diversão"> <span>Kids Diversão</span></div>
+                <div class="sva-item"><input type="checkbox" class="sva-chk" value="19,99" data-nome="Pacote Aprendizado"> <span>Pacote Aprendizado</span></div>
+                <div class="sva-item"><input type="checkbox" class="sva-chk" value="9,99" data-nome="Telemedicina I"> <span>Telemedicina I</span></div>
+                <div class="sva-item"><input type="checkbox" class="sva-chk" value="19,99" data-nome="Telemedicina II"> <span>Telemedicina II</span></div>
+                <div class="sva-item"><input type="checkbox" class="sva-chk" value="14,99" data-nome="Exitlag"> <span>Exitlag</span></div>
+                <div class="sva-item"><input type="checkbox" class="sva-chk" value="19,99" data-nome="Desktop Play Start 2026"> <span>Play Start (21 ch)</span></div>
+                <div class="sva-item"><input type="checkbox" class="sva-chk" value="39.99" data-nome="Desktop Play Top 2026"> <span>Play Top (67 ch)</span></div>
+            </div>
+
+            <label style="margin-top: 10px;">🎭 Abordagem</label>
             <select id="abord">
                 <option value="1">Direta (Foco em R$)</option>
                 <option value="2">Empática (Valorização)</option>
@@ -55,30 +110,29 @@
                 <option value="8">Técnica (Sem Conexão Total)</option>
             </select>
         </div>
+
         <button class="btn-main" onclick="gerarOferta()">📝 Gerar Texto de Oferta</button>
         <div id="resO" class="res-box"></div>
         <button id="cO" class="btn-main btn-copy hide" onclick="copy('o')">📋 Copiar Mensagem</button>
     </div>
 
+    <!-- ABA MULTAS -->
     <div id="v-calc" class="hide">
         <div class="section">
             <label>📜 Tabela de Multa</label>
             <select id="tabelaMulta">
-                <option value="29.16666666666667">Antiga (R$ 29,17/mês)</option>
+                <option value="29.17">Antiga (R$ 29,17/mês)</option>
                 <option value="40.00" selected>Nova (R$ 40,00/mês)</option>
             </select>
-
             <label>🛡️ Fidelidade Instalação?</label>
-            <select id="fielInstal" onchange="toggleCalc()"><option value="nao">Não</option><option value="sim">Sim</option></select>
-
-            <div id="boxDatasFidelidade" class="hide" style="margin-top: 10px;">
-                <div class="row">
-                    <div><label>📅 Data Instalação</label><input type="date" id="dInstal"></div>
-                    <div><label>📅 Data Saída</label><input type="date" id="dCanc"></div>
+            <select id="fielInstal"><option value="nao">Não</option><option value="sim" selected>Sim</option></select>
+            <div class="row">
+                <div>
+                    <label>⏳ Meses Restantes</label>
+                    <input type="number" id="mR" value="6">
                 </div>
             </div>
-
-            <div class="row" style="margin-top: 10px;">
+            <div class="row">
                 <div><label>🗓️ Dias de Uso</label><input type="number" id="dC" value="15"></div>
                 <div><label>💵 Atrasos (R$)</label><input type="number" id="vAtra" value="0"></div>
             </div>
@@ -88,10 +142,11 @@
         <button id="cC" class="btn-main btn-copy hide" onclick="copy('c')">📋 Copiar Script de Multa</button>
     </div>
 
+    <!-- ABA ENCAIXE -->
     <div id="v-enc" class="hide">
         <div class="section">
             <label>📝 SA</label><input type="text" id="eSA">
-            <label>🏙️ Cidade</label><input list="listaCidadesEnc" id="eCid">
+            <label>🏙️ Cidade</label><input list="cidades_geral" id="eCid">
             <div class="row">
                 <div><label>📅 Data</label><input type="date" id="eData"></div>
                 <div><label>⏰ Período</label><select id="ePer"><option value="manhã">Manhã</option><option value="tarde">Tarde</option></select></div>
@@ -105,11 +160,11 @@
     </div>
 </div>
 
-<datalist id="listaCidadesEnc"></datalist>
-<script src="script.js"></script>
+<datalist id="cidades_geral"></datalist>
 
+<!-- INTEGRAÇÃO ASSISTENTE DOLLY -->
 <div id="ia-container">
-    <div id="ia-window">
+    <div id="ia-window" style="display: none;">
         <div id="ia-header">
             <span>🤖 Dolly</span>
             <button onclick="toggleIA()" style="background:none;border:none;color:white;cursor:pointer;font-size:16px;">✖</button>
@@ -125,49 +180,7 @@
     <button id="ia-button" onclick="toggleIA()">✨</button>
 </div>
 
-<script>
-function toggleIA() {
-    const win = document.getElementById('ia-window');
-    win.style.display = (win.style.display === 'flex') ? 'none' : 'flex';
-}
-
-async function askGemini() {
-    const input = document.getElementById('ia-input');
-    const chat = document.getElementById('ia-chat');
-    const msg = input.value.trim();
-    if (!msg) return;
-
-    chat.innerHTML += `<div class="ia-msg ia-user">${msg}</div>`;
-    input.value = "";
-    chat.scrollTop = chat.scrollHeight;
-
-    try {
-            const response = await fetch("https://calculadora-xggm.onrender.com/api/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ msg })
-        });
-
-        if (!response.ok) {
-            const data = await response.json();
-            throw new Error(`Erro ${response.status}: ${data.error || "Falha no backend"}`);
-        }
-
-        const data = await response.json();
-        const text = data.text || "Sem resposta da IA.";
-        chat.innerHTML += `<div class="ia-msg ia-bot">${text.replace(/\n/g, "<br>")}</div>`;
-    } catch (e) {
-        chat.innerHTML += `<div class="ia-msg ia-error"><b>⚠️ Falha na IA:</b><br>${e.message} <br><br><i>Verifique se o seu servidor Node.js (localhost:3000) está rodando!</i></div>`;
-        console.error("Erro técnico:", e);
-    }
-
-    chat.scrollTop = chat.scrollHeight;
-}
-
-document.getElementById('ia-input').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') askGemini();
-});
-</script>
-
+<!-- Importação da lógica externa -->
+<script src="script.js"></script>
 </body>
 </html>
