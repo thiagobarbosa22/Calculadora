@@ -178,7 +178,33 @@ function calc() {
 }
 
 function gerarEnc() {
-    var txt = "SA: " + document.getElementById('eSA').value + "\nCidade: " + document.getElementById('eCid').value + "\nData: " + document.getElementById('eData').value + " (" + document.getElementById('ePer').value + ")\nRestrição: " + document.getElementById('eRest').value + "\nMotivo: " + document.getElementById('eRecl').value;
+    var cidInput = (document.getElementById('eCid').value || "").trim();
+    var regional = "-";
+    var subterritorio = "-";
+    
+    if (cidInput) {
+        var cidLower = cidInput.toLowerCase();
+        var encontrado = false;
+        for (var reg in dadosRegionais) {
+            for (var sub in dadosRegionais[reg]) {
+                if (dadosRegionais[reg][sub].some(c => c.toLowerCase() === cidLower)) {
+                    regional = reg;
+                    subterritorio = sub;
+                    encontrado = true;
+                    break;
+                }
+            }
+            if (encontrado) break;
+        }
+    }
+
+    var txt = "SA: " + document.getElementById('eSA').value + 
+              "\nRegional: " + regional + " | Sub: " + subterritorio + 
+              "\nCidade: " + cidInput + 
+              "\nData: " + document.getElementById('eData').value + " (" + document.getElementById('ePer').value + ")" + 
+              "\nRestrição: " + document.getElementById('eRest').value + 
+              "\nMotivo: " + document.getElementById('eRecl').value;
+
     document.getElementById('resE').innerText = txt;
     document.getElementById('resE').style.display = "block";
     document.getElementById('cE').classList.remove('hide');
