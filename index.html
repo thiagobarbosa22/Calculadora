@@ -20,6 +20,16 @@
         }
         .sva-item { display: flex; align-items: center; gap: 6px; font-size: 12px; }
         .sva-item input { width: auto; margin: 0; }
+        
+        /* Estilo para módulo Relâmpago */
+        .relampago-box {
+            border: 1px solid var(--accent);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            background: rgba(255, 152, 0, 0.05);
+        }
     </style>
 </head>
 <body class="dark">
@@ -47,58 +57,90 @@
             <input list="cidades_geral" id="cid" oninput="checkCid()" placeholder="Selecione a cidade">
             <div id="conconrrencia" class="alert-box" style="display:none; background: rgba(255, 152, 0, 0.1); color: #ef6c00; padding: 10px; border-radius: 8px; font-size: 12px; border-left: 4px solid var(--alert); margin-bottom: 12px;">🚀 <b>Região Central:</b> Desconto de R$ 60,00 Liberado!</div>
 
-            <div class="row">
-                <div>
-                    <label>💰 Plano Atual</label>
-                    <input type="number" id="vA" value="109.99">
+            <!-- Módulo Exclusivo: Ofertas Relâmpago -->
+            <div class="relampago-box">
+                <label style="color: var(--accent); font-weight: bold; font-size: 14px;">⚡ Nova Campanha: Ofertas Relâmpago</label>
+                <div class="row" style="margin-top: 8px;">
+                    <div>
+                        <label>Plano Relâmpago</label>
+                        <select id="velocidadeRelampago" onchange="toggleRelampago()">
+                            <option value="none">Nenhum (Usar Padrão)</option>
+                            <option value="200">200MB</option>
+                            <option value="400">400MB</option>
+                            <option value="600">600MB</option>
+                            <option value="600hbo">600MB + HBO MAX</option>
+                            <option value="1000">1 GIGA</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Tipo de Oferta</label>
+                        <select id="tipoRelampago" disabled>
+                            <option value="gratis_50_30">3 Meses Grátis (Escalonado)</option>
+                            <option value="gratis_flat">3 Meses Grátis (Flat)</option>
+                            <option value="999_50_30">3 Meses R$ 9,99 (Escalonado)</option>
+                            <option value="999_flat">3 Meses R$ 9,99 (Flat)</option>
+                            <option value="especial">Especial (7 meses desc.)</option>
+                        </select>
+                    </div>
                 </div>
-                <div>
-                    <label>📉 Desconto</label>
-                    <select id="vD">
-                        <option value="10">R$ 10,00</option>
-                        <option value="20">R$ 20,00</option>
-                        <option value="30">R$ 30,00</option>
-                        <option value="40">R$ 40,00</option>
-                        <option value="50">R$ 50,00</option>
-                        <option value="60" id="o60" disabled>R$ 60,00*</option>
-                    </select>
-                </div>
+                <small style="color: var(--text-secondary); display: block; margin-top: 5px;">Se selecionado, substitui as regras de Desconto, Prazo e Abordagem padrão.</small>
             </div>
 
-            <div class="row">
-                <div>
-                    <label>⏳ Prazo</label>
-                    <select id="prazo">
-                        <option value="6">6 Meses</option>
-                        <option value="12">12 Meses</option>
-                    </select>
+            <!-- Regras Padrão (Desativadas caso Relâmpago esteja ativo) -->
+            <div id="regrasPadrao">
+                <div class="row">
+                    <div>
+                        <label>💰 Plano Atual</label>
+                        <input type="number" id="vA" value="109.99">
+                    </div>
+                    <div>
+                        <label>📉 Desconto</label>
+                        <select id="vD">
+                            <option value="10">R$ 10,00</option>
+                            <option value="20">R$ 20,00</option>
+                            <option value="30">R$ 30,00</option>
+                            <option value="40">R$ 40,00</option>
+                            <option value="50">R$ 50,00</option>
+                            <option value="60" id="o60" disabled>R$ 60,00*</option>
+                        </select>
+                    </div>
                 </div>
-                <div>
-                    <label>🎁 Isenção</label>
-                    <select id="isencao">
-                        <option value="0">Nenhuma</option>
-                        <option value="1">1 Mês Grátis</option>
-                        <option value="2">2 Meses Grátis</option>
-                    </select>
+
+                <div class="row">
+                    <div>
+                        <label>⏳ Prazo</label>
+                        <select id="prazo">
+                            <option value="6">6 Meses</option>
+                            <option value="12">12 Meses</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>🎁 Isenção</label>
+                        <select id="isencao">
+                            <option value="0">Nenhuma</option>
+                            <option value="1">1 Mês Grátis</option>
+                            <option value="2">2 Meses Grátis</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
             <!-- Lista de SVAs Oficial -->
             <label>➕ Adicionar SVAs (Aplicativos)</label>
             <div class="sva-group">
-                <div class="sva-item"><input type="checkbox" class="sva-chk" value="19,99" data-nome="GloboPlay Anúncios 2026"> <span>GloboPlay Anúncios</span></div>
-                <div class="sva-item"><input type="checkbox" class="sva-chk" value="29,99" data-nome="Max Standard 2026 (HBO)"> <span>Max Standard (HBO)</span></div>
-                <div class="sva-item"><input type="checkbox" class="sva-chk" value="44,99" data-nome="Disney+"> <span>Disney+</span></div>
-                <div class="sva-item"><input type="checkbox" class="sva-chk" value="19,99" data-nome="Kids Diversão"> <span>Kids Diversão</span></div>
-                <div class="sva-item"><input type="checkbox" class="sva-chk" value="19,99" data-nome="Pacote Aprendizado"> <span>Pacote Aprendizado</span></div>
-                <div class="sva-item"><input type="checkbox" class="sva-chk" value="9,99" data-nome="Telemedicina I"> <span>Telemedicina I</span></div>
-                <div class="sva-item"><input type="checkbox" class="sva-chk" value="19,99" data-nome="Telemedicina II"> <span>Telemedicina II</span></div>
-                <div class="sva-item"><input type="checkbox" class="sva-chk" value="14,99" data-nome="Exitlag"> <span>Exitlag</span></div>
-                <div class="sva-item"><input type="checkbox" class="sva-chk" value="19,99" data-nome="Desktop Play Start 2026"> <span>Play Start (21 ch)</span></div>
+                <div class="sva-item"><input type="checkbox" class="sva-chk" value="19.99" data-nome="GloboPlay Anúncios 2026"> <span>GloboPlay Anúncios</span></div>
+                <div class="sva-item"><input type="checkbox" class="sva-chk" value="29.99" data-nome="Max Standard 2026 (HBO)"> <span>Max Standard (HBO)</span></div>
+                <div class="sva-item"><input type="checkbox" class="sva-chk" value="44.99" data-nome="Disney+"> <span>Disney+</span></div>
+                <div class="sva-item"><input type="checkbox" class="sva-chk" value="19.99" data-nome="Kids Diversão"> <span>Kids Diversão</span></div>
+                <div class="sva-item"><input type="checkbox" class="sva-chk" value="19.99" data-nome="Pacote Aprendizado"> <span>Pacote Aprendizado</span></div>
+                <div class="sva-item"><input type="checkbox" class="sva-chk" value="9.99" data-nome="Telemedicina I"> <span>Telemedicina I</span></div>
+                <div class="sva-item"><input type="checkbox" class="sva-chk" value="19.99" data-nome="Telemedicina II"> <span>Telemedicina II</span></div>
+                <div class="sva-item"><input type="checkbox" class="sva-chk" value="14.99" data-nome="Exitlag"> <span>Exitlag</span></div>
+                <div class="sva-item"><input type="checkbox" class="sva-chk" value="19.99" data-nome="Desktop Play Start 2026"> <span>Play Start (21 ch)</span></div>
                 <div class="sva-item"><input type="checkbox" class="sva-chk" value="39.99" data-nome="Desktop Play Top 2026"> <span>Play Top (67 ch)</span></div>
             </div>
 
-            <label style="margin-top: 10px;">🎭 Abordagem</label>
+            <label style="margin-top: 10px;">🎭 Abordagem Padrão</label>
             <select id="abord">
                 <option value="1">Direta (Foco em R$)</option>
                 <option value="2">Empática (Valorização)</option>
