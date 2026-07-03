@@ -19,11 +19,11 @@ var dadosRegionais = {
 
 // Dicionário de preços da nova campanha Relâmpago
 const ofertasRelampago = {
-    "200": { desc_50: 44.90, desc_30: 59.90, flat: 49.90, esp_1a7: 29.90, esp_50: 44.90, esp_30: 59.90 },
-    "400": { desc_50: 44.90, desc_30: 64.90, flat: 49.90, esp_1a7: 29.90, esp_50: 44.90, esp_30: 64.90 },
-    "600": { desc_50: 49.90, desc_30: 69.90, flat: 59.90, esp_1a7: 34.90, esp_50: 49.90, esp_30: 69.90 },
-    "600hbo": { desc_50: 59.90, desc_30: 89.90, flat: 64.90, esp_1a7: 49.90, esp_50: 69.90, esp_30: 94.90 },
-    "1000": { desc_50: 69.90, desc_30: 99.90, flat: 69.90, esp_1a7: 59.90, esp_50: 69.90, esp_30: 94.90 }
+    "200": { valor_fixo: 89.99, desc_50: 44.90, desc_30: 59.90, flat: 49.90, esp_1a7: 29.90, esp_50: 44.90, esp_30: 59.90 },
+    "400": { valor_fixo: 94.99, desc_50: 44.90, desc_30: 64.90, flat: 49.90, esp_1a7: 29.90, esp_50: 44.90, esp_30: 64.90 },
+    "600": { valor_fixo: 99.99, desc_50: 49.90, desc_30: 69.90, flat: 59.90, esp_1a7: 34.90, esp_50: 49.90, esp_30: 69.90 },
+    "600hbo": { valor_fixo: 134.99, desc_50: 59.90, desc_30: 89.90, flat: 64.90, esp_1a7: 49.90, esp_50: 69.90, esp_30: 94.90 },
+    "1000": { valor_fixo: 139.99, desc_50: 69.90, desc_30: 99.90, flat: 69.90, esp_1a7: 59.90, esp_50: 69.90, esp_30: 94.90 }
 };
 
 window.onload = function() {
