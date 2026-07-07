@@ -116,13 +116,13 @@ function gerarOferta() {
             : `terá a mensalidade TOTALMENTE GRÁTIS nos 3 primeiros meses`;
 
         if (tRel === "gratis_50_30") {
-            msg = `Olá, ${nome}! Consegui uma condição relâmpago imperdível para o plano de ${planoNome}${txtAps}. Você ${textoPrimeirosMesesGratis}! Do 4º ao 9º mês, o pacote fica por ${f(dados.desc_50 + totalSva)} e do 10º ao 12º mês, ${f(dados.desc_30 + totalSva)}. O que acha?`;
+            msg = `Olá, ${nome}! Consegui uma condição relâmpago imperdível para o plano de ${planoNome}${txtAps}. Você ${textoPrimeirosMesesGratis}! E por mais 3 meses, o pacote fica por ${f(dados.desc_50 + totalSva)} e do 10º ao 12º mês, ${f(dados.desc_30 + totalSva)}. O que acha?`;
         } else if (tRel === "gratis_flat") {
-            msg = `Olá, ${nome}! Consegui uma condição relâmpago imperdível para o plano de ${planoNome}${txtAps}. Você ${textoPrimeirosMesesGratis}! E do 4º ao 12º mês, o valor fica fixado em apenas ${f(dados.flat + totalSva)}. O que acha de aproveitarmos?`;
+            msg = `Olá, ${nome}! Consegui uma condição relâmpago imperdível para o plano de ${planoNome}${txtAps}. Você ${textoPrimeirosMesesGratis}! E por mais 3 meses, o valor fica fixado em apenas ${f(dados.flat + totalSva)}. O que acha de aproveitarmos?`;
         } else if (tRel === "999_50_30") {
-            msg = `Olá, ${nome}! Consegui uma condição especial para o plano de ${planoNome}${txtAps}. Nos 3 primeiros meses você paga apenas ${f(9.99 + totalSva)}! Do 4º ao 9º mês, o valor vai para ${f(dados.desc_50 + totalSva)} e do 10º ao 12º mês fica em ${f(dados.desc_30 + totalSva)}. Podemos atualizar?`;
+            msg = `Olá, ${nome}! Consegui uma condição especial para o plano de ${planoNome}${txtAps}. Nos 3 primeiros meses você paga apenas ${f(9.99 + totalSva)}! E por mais 3 meses, o valor vai para ${f(dados.desc_50 + totalSva)} e do 10º ao 12º mês fica em ${f(dados.desc_30 + totalSva)}. Podemos atualizar?`;
         } else if (tRel === "999_flat") {
-            msg = `Olá, ${nome}! Consegui uma condição especial para o plano de ${planoNome}${txtAps}. Nos 3 primeiros meses você paga apenas ${f(9.99 + totalSva)}! E do 4º ao 12º mês, o valor fica congelado em apenas ${f(dados.flat + totalSva)}. Podemos fechar?`;
+            msg = `Olá, ${nome}! Consegui uma condição especial para o plano de ${planoNome}${txtAps}. Nos 3 primeiros meses você paga apenas ${f(9.99 + totalSva)}! E por mais 3 meses, o valor fica congelado em apenas ${f(dados.flat + totalSva)}. Podemos fechar?`;
         } else if (tRel === "especial") {
             msg = `Olá, ${nome}! Liberei a Oferta Especial Retenção para o plano de ${planoNome}${txtAps}. Do 1º ao 7º mês você pagará somente ${f(dados.esp_1a7 + totalSva)}! No 8º e 9º mês fica ${f(dados.esp_50 + totalSva)}, e do 10º ao 12º mês, ${f(dados.esp_30 + totalSva)}. Ficou ótimo, né?`;
         }
