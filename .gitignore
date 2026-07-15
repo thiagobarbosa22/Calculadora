@@ -23,6 +23,7 @@ desktop.ini
 dist/
 build/
 .cache/
+.npm-cache/
 *.tsbuildinfo
 # Opcional Windows
 $RECYCLE.BIN/

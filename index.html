@@ -2,226 +2,183 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Desktop Retenção - Black Edition v8</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Ferramenta interna para cálculo de retenção, multas e encaixes.">
+    <title>Desktop Retenção</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Organização dos SVAs na interface */
-        .sva-group { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 8px; 
-            margin-top: 5px; 
-            background: rgba(0,0,0,0.15); 
-            padding: 10px; 
-            border-radius: 8px; 
-            max-height: 180px; 
-            overflow-y: auto; 
-        }
-        .sva-item { display: flex; align-items: center; gap: 6px; font-size: 12px; }
-        .sva-item input { width: auto; margin: 0; }
-        
-        /* Estilo para módulo Relâmpago */
-        .relampago-box {
-            border: 1px solid var(--accent);
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 15px;
-            margin-bottom: 15px;
-            background: rgba(255, 152, 0, 0.05);
-        }
-    </style>
+    <script src="core.js" defer></script>
+    <script src="script.js" defer></script>
 </head>
 <body class="dark">
+<main class="card">
+    <button id="theme-toggle" class="icon-button theme-toggle" type="button" aria-label="Alternar tema">◐</button>
+    <header class="header">
+        <h1>Desktop Retenção</h1>
+        <p>Calculadora de multas e ofertas</p>
+    </header>
 
-<div class="card">
-    <button class="dark-toggle" onclick="document.body.classList.toggle('dark')">🌓</button>
-    <div class="header">
-        <h2 style="margin:0; color: var(--accent);">Desktop Retenção</h2>
-        <small style="color: var(--text-secondary);">Calculadora de Multas & Ofertas</small>
-    </div>
+    <nav class="tabs" role="tablist" aria-label="Ferramentas">
+        <button id="tab-ret" role="tab" data-tab="ret" aria-controls="panel-ret">💬 Oferta</button>
+        <button id="tab-calc" role="tab" data-tab="calc" aria-controls="panel-calc">🧮 Multas</button>
+        <button id="tab-enc" role="tab" data-tab="enc" aria-controls="panel-enc">📅 Encaixe</button>
+    </nav>
 
-    <div class="tabs">
-        <button id="t1" class="active" onclick="tab('ret')">💬 Oferta</button>
-        <button id="t2" onclick="tab('calc')">🧮 Multas</button>
-        <button id="t3" onclick="tab('enc')">📅 Encaixe</button>
-    </div>
-
-    <!-- ABA OFERTAS -->
-    <div id="v-ret">
+    <section id="panel-ret" data-panel="ret" role="tabpanel" aria-labelledby="tab-ret">
         <div class="section">
-            <label>👤 Nome do Cliente</label>
-            <input type="text" id="n" placeholder="Ex: João Silva">
+            <label for="n">Nome do cliente</label>
+            <input type="text" id="n" maxlength="80" autocomplete="off" placeholder="Ex.: João Silva">
 
-            <label>🏙️ Cidade</label>
-            <input list="cidades_geral" id="cid" oninput="checkCid()" placeholder="Selecione a cidade">
-            <div id="conconrrencia" class="alert-box" style="display:none; background: rgba(255, 152, 0, 0.1); color: #ef6c00; padding: 10px; border-radius: 8px; font-size: 12px; border-left: 4px solid var(--alert); margin-bottom: 12px;">🚀 <b>Região Central:</b> Desconto de R$ 60,00 Liberado!</div>
+            <label for="cid">Cidade</label>
+            <input list="cidades_geral" id="cid" maxlength="80" autocomplete="off" placeholder="Selecione a cidade">
+            <div id="alerta-central" class="alert-box" role="status" hidden><strong>Região Central:</strong> desconto de R$ 60,00 disponível.</div>
 
-            <!-- Módulo Exclusivo: Ofertas Relâmpago -->
-            <div class="relampago-box">
-                <label style="color: var(--accent); font-weight: bold; font-size: 14px;">⚡ Nova Campanha: Ofertas Relâmpago</label>
-                <div class="row" style="margin-top: 8px;">
+            <fieldset class="relampago-box">
+                <legend>⚡ Ofertas Relâmpago</legend>
+                <div class="row">
                     <div>
-                        <label>Plano Relâmpago</label>
-                        <select id="velocidadeRelampago" onchange="toggleRelampago()">
-                            <option value="none">Nenhum (Usar Padrão)</option>
-                            <option value="200">200MB</option>
-                            <option value="400">400MB</option>
-                            <option value="600">600MB</option>
-                            <option value="600hbo">600MB + HBO MAX</option>
-                            <option value="1000">1 GIGA</option>
+                        <label for="velocidadeRelampago">Plano Relâmpago</label>
+                        <select id="velocidadeRelampago">
+                            <option value="none">Nenhum (oferta padrão)</option>
+                            <option value="200">200 MB</option>
+                            <option value="400">400 MB</option>
+                            <option value="600">600 MB</option>
+                            <option value="600hbo">600 MB + HBO Max</option>
+                            <option value="1000">1 Giga</option>
                         </select>
                     </div>
                     <div>
-                        <label>Tipo de Oferta</label>
+                        <label for="tipoRelampago">Tipo de oferta</label>
                         <select id="tipoRelampago" disabled>
-                            <option value="gratis_50_30">3 Meses Grátis (Escalonado)</option>
-                            <option value="gratis_flat">3 Meses Grátis (Flat)</option>
-                            <option value="999_50_30">3 Meses R$ 9,99 (Escalonado)</option>
-                            <option value="999_flat">3 Meses R$ 9,99 (Flat)</option>
-                            <option value="especial">Especial (7 meses desc.)</option>
+                            <option value="gratis_50_30">3 meses grátis — escalonado</option>
+                            <option value="gratis_flat">3 meses grátis — flat</option>
+                            <option value="999_50_30">3 meses R$ 9,99 — escalonado</option>
+                            <option value="999_flat">3 meses R$ 9,99 — flat</option>
+                            <option value="especial">Especial — 7 meses</option>
                         </select>
                     </div>
                 </div>
-                <small style="color: var(--text-secondary); display: block; margin-top: 5px;">Se selecionado, substitui as regras de Desconto, Prazo e Abordagem padrão.</small>
-            </div>
+                <small>O texto mostrará todos os períodos e o retorno ao valor regular.</small>
+            </fieldset>
 
-            <!-- Regras Padrão (Desativadas caso Relâmpago esteja ativo) -->
-            <div id="regrasPadrao">
+            <fieldset id="regrasPadrao">
+                <legend>Oferta padrão</legend>
                 <div class="row">
                     <div>
-                        <label>💰 Plano Atual</label>
-                        <input type="number" id="vA" value="109.99">
+                        <label for="vA">Plano atual</label>
+                        <input type="number" id="vA" value="109.99" min="0.01" max="9999" step="0.01" inputmode="decimal">
                     </div>
                     <div>
-                        <label>📉 Desconto</label>
+                        <label for="vD">Desconto</label>
                         <select id="vD">
-                            <option value="10">R$ 10,00</option>
+                            <option value="5">R$ 5,00</option>
+                            <option value="10" selected>R$ 10,00</option>
                             <option value="20">R$ 20,00</option>
                             <option value="30">R$ 30,00</option>
                             <option value="40">R$ 40,00</option>
                             <option value="50">R$ 50,00</option>
-                            <option value="60" id="o60" disabled>R$ 60,00*</option>
+                            <option value="60" id="o60" disabled>R$ 60,00 — Central</option>
                         </select>
                     </div>
                 </div>
-
                 <div class="row">
                     <div>
-                        <label>⏳ Prazo</label>
-                        <select id="prazo">
-                            <option value="6">6 Meses</option>
-                            <option value="12">12 Meses</option>
-                        </select>
+                        <label for="prazo">Prazo</label>
+                        <select id="prazo"><option value="6">6 meses</option><option value="12">12 meses</option></select>
                     </div>
                     <div>
-                        <label>🎁 Isenção</label>
-                        <select id="isencao">
-                            <option value="0">Nenhuma</option>
-                            <option value="1">1 Mês Grátis</option>
-                            <option value="2">2 Meses Grátis</option>
-                        </select>
+                        <label for="isencao">Isenção confirmada</label>
+                        <select id="isencao"><option value="0">Nenhuma</option><option value="1">1 mês</option><option value="2">2 meses</option></select>
                     </div>
                 </div>
-            </div>
+            </fieldset>
 
-            <!-- Lista de SVAs Oficial -->
-            <label>➕ Adicionar SVAs (Aplicativos)</label>
-            <div class="sva-group">
-                <div class="sva-item"><input type="checkbox" class="sva-chk" value="19.99" data-nome="GloboPlay Anúncios 2026"> <span>GloboPlay Anúncios</span></div>
-                <div class="sva-item"><input type="checkbox" class="sva-chk" value="29.99" data-nome="Max Standard 2026 (HBO)"> <span>Max Standard (HBO)</span></div>
-                <div class="sva-item"><input type="checkbox" class="sva-chk" value="44.99" data-nome="Disney+"> <span>Disney+</span></div>
-                <div class="sva-item"><input type="checkbox" class="sva-chk" value="19.99" data-nome="Kids Diversão"> <span>Kids Diversão</span></div>
-                <div class="sva-item"><input type="checkbox" class="sva-chk" value="19.99" data-nome="Pacote Aprendizado"> <span>Pacote Aprendizado</span></div>
-                <div class="sva-item"><input type="checkbox" class="sva-chk" value="9.99" data-nome="Telemedicina I"> <span>Telemedicina I</span></div>
-                <div class="sva-item"><input type="checkbox" class="sva-chk" value="19.99" data-nome="Telemedicina II"> <span>Telemedicina II</span></div>
-                <div class="sva-item"><input type="checkbox" class="sva-chk" value="14.99" data-nome="Exitlag"> <span>Exitlag</span></div>
-                <div class="sva-item"><input type="checkbox" class="sva-chk" value="19.99" data-nome="Desktop Play Start 2026"> <span>Play Start (21 ch)</span></div>
-                <div class="sva-item"><input type="checkbox" class="sva-chk" value="39.99" data-nome="Desktop Play Top 2026"> <span>Play Top (67 ch)</span></div>
-            </div>
+            <fieldset>
+                <legend>Adicionar aplicativos</legend>
+                <div class="sva-group">
+                    <label class="sva-item"><input type="checkbox" class="sva-chk" value="19.99" data-nome="Globoplay com anúncios"><span>Globoplay — R$ 19,99</span></label>
+                    <label class="sva-item"><input type="checkbox" class="sva-chk" value="29.99" data-nome="Max Standard"><span>Max Standard — R$ 29,99</span></label>
+                    <label class="sva-item"><input type="checkbox" class="sva-chk" value="44.99" data-nome="Disney+"><span>Disney+ — R$ 44,99</span></label>
+                    <label class="sva-item"><input type="checkbox" class="sva-chk" value="19.99" data-nome="Kids Diversão"><span>Kids Diversão — R$ 19,99</span></label>
+                    <label class="sva-item"><input type="checkbox" class="sva-chk" value="19.99" data-nome="Pacote Aprendizado"><span>Aprendizado — R$ 19,99</span></label>
+                    <label class="sva-item"><input type="checkbox" class="sva-chk" value="9.99" data-nome="Telemedicina I"><span>Telemedicina I — R$ 9,99</span></label>
+                    <label class="sva-item"><input type="checkbox" class="sva-chk" value="19.99" data-nome="Telemedicina II"><span>Telemedicina II — R$ 19,99</span></label>
+                    <label class="sva-item"><input type="checkbox" class="sva-chk" value="14.99" data-nome="ExitLag"><span>ExitLag — R$ 14,99</span></label>
+                    <label class="sva-item"><input type="checkbox" class="sva-chk" value="19.99" data-nome="Desktop Play Start"><span>Play Start — R$ 19,99</span></label>
+                    <label class="sva-item"><input type="checkbox" class="sva-chk" value="39.99" data-nome="Desktop Play Top"><span>Play Top — R$ 39,99</span></label>
+                </div>
+            </fieldset>
 
-            <label style="margin-top: 10px;">🎭 Abordagem Padrão</label>
+            <label for="abord">Abordagem</label>
             <select id="abord">
-                <option value="1">Direta (Foco em R$)</option>
-                <option value="2">Empática (Valorização)</option>
-                <option value="3">VIP (Exclusividade)</option>
-                <option value="4">Urgente (Fechamento)</option>
-                <option value="5">Custo-Benefício (Lógica)</option>
-                <option value="6">Retenção Crítica (Última Cartada)</option>
-                <option value="7">Técnica (Instabilidade)</option>
-                <option value="8">Técnica (Sem Conexão)</option>
+                <option value="1">Direta — foco em valor</option>
+                <option value="2">Empática</option>
+                <option value="3">Diferenciada</option>
+                <option value="4">Fechamento</option>
+                <option value="5">Custo-benefício</option>
+                <option value="6">Melhor condição autorizada</option>
+                <option value="7">Técnica — instabilidade</option>
+                <option value="8">Técnica — sem conexão</option>
             </select>
+            <label class="check-row"><input type="checkbox" id="acaoTecnicaConfirmada"><span>O atendimento técnico já foi realmente confirmado no sistema</span></label>
         </div>
+        <button id="gerar-oferta" class="btn-main" type="button">Gerar texto de oferta</button>
+        <div id="resO" class="res-box" role="status" aria-live="polite" hidden></div>
+        <button id="copy-oferta" class="btn-main btn-copy" type="button" data-copy hidden>Copiar mensagem</button>
+    </section>
 
-        <button class="btn-main" onclick="gerarOferta()">📝 Gerar Texto de Oferta</button>
-        <div id="resO" class="res-box"></div>
-        <button id="cO" class="btn-main btn-copy hide" onclick="copy('o')">📋 Copiar Mensagem</button>
-    </div>
-
-    <!-- ABA MULTAS -->
-    <div id="v-calc" class="hide">
+    <section id="panel-calc" data-panel="calc" role="tabpanel" aria-labelledby="tab-calc" hidden>
         <div class="section">
-            <label>📜 Tabela de Multa</label>
-            <select id="tabelaMulta">
-                <option value="29.17">Antiga (R$ 29,17/mês)</option>
-                <option value="40.00" selected>Nova (R$ 40,00/mês)</option>
-            </select>
-            <label>🛡️ Fidelidade Instalação?</label>
+            <p class="notice">Resultado estimado. Confirme os valores no sistema oficial antes de informar ao cliente.</p>
+            <label for="nomeMulta">Nome do cliente</label>
+            <input type="text" id="nomeMulta" maxlength="80" autocomplete="off" placeholder="Opcional">
+            <label for="planoMulta">Valor mensal do plano</label>
+            <input type="number" id="planoMulta" value="109.99" min="0.01" max="9999" step="0.01" inputmode="decimal">
+            <label for="tabelaMulta">Tabela de multa</label>
+            <select id="tabelaMulta"><option value="29.17">Antiga — R$ 29,17/mês</option><option value="40.00" selected>Nova — R$ 40,00/mês</option></select>
+            <label for="fielInstal">Possui fidelidade de instalação?</label>
             <select id="fielInstal"><option value="nao">Não</option><option value="sim" selected>Sim</option></select>
             <div class="row">
-                <div>
-                    <label>⏳ Meses Restantes</label>
-                    <input type="number" id="mR" value="6">
-                </div>
+                <div><label for="mR">Meses restantes</label><input type="number" id="mR" value="6" min="0" max="24" step="1"></div>
+                <div><label for="dC">Dias de uso</label><input type="number" id="dC" value="15" min="0" max="30" step="1"></div>
             </div>
-            <div class="row">
-                <div><label>🗓️ Dias de Uso</label><input type="number" id="dC" value="15"></div>
-                <div><label>💵 Atrasos (R$)</label><input type="number" id="vAtra" value="0"></div>
-            </div>
+            <label for="vAtra">Faturas em aberto</label>
+            <input type="number" id="vAtra" value="0" min="0" max="99999" step="0.01" inputmode="decimal">
         </div>
-        <button class="btn-main" onclick="calc()">🧮 Calcular Multa</button>
-        <div id="resC" class="res-box"></div>
-        <button id="cC" class="btn-main btn-copy hide" onclick="copy('c')">📋 Copiar Script de Multa</button>
-    </div>
+        <button id="calcular-multa" class="btn-main" type="button">Calcular estimativa</button>
+        <div id="resC" class="res-box" role="status" aria-live="polite" hidden></div>
+        <button id="copy-multa" class="btn-main btn-copy" type="button" data-copy hidden>Copiar mensagem</button>
+    </section>
 
-    <!-- ABA ENCAIXE -->
-    <div id="v-enc" class="hide">
+    <section id="panel-enc" data-panel="enc" role="tabpanel" aria-labelledby="tab-enc" hidden>
         <div class="section">
-            <label>📝 SA</label><input type="text" id="eSA">
-            <label>🏙️ Cidade</label><input list="cidades_geral" id="eCid">
+            <label for="eSA">SA *</label><input type="text" id="eSA" maxlength="40">
+            <label for="eCid">Cidade *</label><input list="cidades_geral" id="eCid" maxlength="80">
             <div class="row">
-                <div><label>📅 Data</label><input type="date" id="eData"></div>
-                <div><label>⏰ Período</label><select id="ePer"><option value="manhã">Manhã</option><option value="tarde">Tarde</option></select></div>
+                <div><label for="eData">Data *</label><input type="date" id="eData"></div>
+                <div><label for="ePer">Período</label><select id="ePer"><option value="manhã">Manhã</option><option value="tarde">Tarde</option></select></div>
             </div>
-            <label>🚫 Restrição</label><input type="text" id="eRest">
-            <label>🗣️ Reclamação</label><textarea id="eRecl" rows="2"></textarea>
+            <label for="eRest">Restrição</label><input type="text" id="eRest" maxlength="200">
+            <label for="eRecl">Motivo *</label><textarea id="eRecl" rows="3" maxlength="500"></textarea>
         </div>
-        <button class="btn-main" onclick="gerarEnc()">📝 Gerar Encaixe</button>
-        <div id="resE" class="res-box" style="white-space: pre-wrap; font-family: monospace;"></div>
-        <button id="cE" class="btn-main btn-copy hide" onclick="copy('e')">📋 Copiar Encaixe</button>
-    </div>
-</div>
+        <button id="gerar-encaixe" class="btn-main" type="button">Gerar encaixe</button>
+        <div id="resE" class="res-box pre-wrap" role="status" aria-live="polite" hidden></div>
+        <button id="copy-encaixe" class="btn-main btn-copy" type="button" data-copy hidden>Copiar encaixe</button>
+    </section>
+</main>
 
 <datalist id="cidades_geral"></datalist>
 
-<!-- INTEGRAÇÃO ASSISTENTE DOLLY -->
-<div id="ia-container">
-    <div id="ia-window" style="display: none;">
-        <div id="ia-header">
-            <span>🤖 Dolly</span>
-            <button onclick="toggleIA()" style="background:none;border:none;color:white;cursor:pointer;font-size:16px;">✖</button>
-        </div>
-        <div id="ia-chat">
-            <div class="ia-msg ia-bot">Olá! Aqui é o assistente de retenção. Me conta o caso que eu te ajudo a reverter esse cancelamento.</div>
-        </div>
+<aside id="ia-container">
+    <section id="ia-window" aria-label="Assistente de retenção" hidden>
+        <header id="ia-header"><strong>Assistente de retenção</strong><button id="ia-close" class="icon-button" type="button" aria-label="Fechar assistente">×</button></header>
+        <p class="privacy-note">Não envie CPF, telefone, endereço, contrato ou outros dados pessoais.</p>
+        <div id="ia-chat" aria-live="polite"><div class="ia-msg ia-bot">Conte o contexto sem dados pessoais. Vou sugerir uma mensagem, mas confirme toda oferta e ação no sistema antes de enviá-la.</div></div>
         <div id="ia-input-area">
-            <input type="text" id="ia-input" placeholder="Pergunte algo...">
-            <button id="ia-send" onclick="askGemini()">➤</button>
+            <textarea id="ia-input" rows="2" maxlength="3000" placeholder="Descreva a situação…" aria-label="Mensagem para o assistente"></textarea>
+            <button id="ia-send" type="button">Enviar</button>
         </div>
-    </div>
-    <button id="ia-button" onclick="toggleIA()">✨</button>
-</div>
-
-<script src="script.js"></script>
+    </section>
+    <button id="ia-toggle" type="button" aria-label="Abrir assistente" aria-expanded="false">✨</button>
+</aside>
 </body>
 </html>
